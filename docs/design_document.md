@@ -26,7 +26,7 @@ As a CSXL coworking administrator, I want to be able to safely delete operating 
 
 ## 5. Wireframes / Mockups
 
-![CSXL Open Hours Portal Mockup](https://ibb.co/drXPFFG)
+<img width="864" alt="Screenshot-2024-11-03-at-5-03-42-PM" src="https://github.com/user-attachments/assets/570db7bf-b656-41d2-80b2-d016d7cbbb1f">
 
 ## 6. Technical Implementation Opportunities and Planning
 
