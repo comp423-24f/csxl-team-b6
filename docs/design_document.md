@@ -28,6 +28,8 @@ As a CSXL coworking administrator, I want to be able to safely delete operating 
 
 <img width="864" alt="Screenshot-2024-11-03-at-5-03-42-PM" src="https://github.com/user-attachments/assets/570db7bf-b656-41d2-80b2-d016d7cbbb1f">
 
+[Figma Link](https://www.figma.com/design/MXWDMV9kwcRAP8GuvSUfaJ/SP00-Figma?node-id=11-1833&t=uRC0L9EcUH5pwUgX-1)x
+
 Displayed here shows the CSXL Open Hours Portal interface, where administrators can add new open hours by selecting start and end times, along with specifying days. The lower card lists upcoming open hours, with options to edit or delete each entry.
 
 ## 6. Technical Implementation Opportunities and Planning
