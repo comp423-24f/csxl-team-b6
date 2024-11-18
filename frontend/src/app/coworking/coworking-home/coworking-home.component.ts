@@ -114,7 +114,7 @@ export class CoworkingPageComponent implements OnInit, OnDestroy {
       'academics.*',
       '*',
       '',
-      'academics/admin/section'
+      'coworking/admin'
     );
   }
 
