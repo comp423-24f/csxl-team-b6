@@ -34,7 +34,7 @@ export class AcademicsHomeComponent implements OnInit {
 
   ngOnInit() {
     this.gearService.showAdminGearByPermissionCheck(
-      'academics.*',
+      'coworking.*',
       '*',
       '',
       'academics/admin/section'

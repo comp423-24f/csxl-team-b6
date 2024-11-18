@@ -24,6 +24,7 @@ import { RoomReservationService } from '../room-reservation/room-reservation.ser
 import { ReservationService } from '../reservation/reservation.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NagivationAdminGearService } from 'src/app/navigation/navigation-admin-gear.service';
 
 @Component({
   selector: 'app-coworking-home',
@@ -78,6 +79,7 @@ export class CoworkingPageComponent implements OnInit, OnDestroy {
   };
 
   constructor(
+    private gearService: NagivationAdminGearService,
     public coworkingService: CoworkingService,
     private router: Router,
     private route: ActivatedRoute,
@@ -108,6 +110,12 @@ export class CoworkingPageComponent implements OnInit, OnDestroy {
     this.timerSubscription = timer(0, 10000).subscribe(() => {
       this.coworkingService.pollStatus();
     });
+    this.gearService.showAdminGearByPermissionCheck(
+      'academics.*',
+      '*',
+      '',
+      'coworking/admin'
+    );
   }
 
   ngOnDestroy(): void {
@@ -117,11 +125,7 @@ export class CoworkingPageComponent implements OnInit, OnDestroy {
   reserve(seatSelection: SeatAvailability[]) {
     this.coworkingService.draftReservation(seatSelection).subscribe({
       error: (response) => {
-        this.snackBar.open(
-          response.error.message,
-          '',
-          { duration: 8000 }
-        );
+        this.snackBar.open(response.error.message, '', { duration: 8000 });
       },
       next: (reservation) => {
         this.router.navigateByUrl(`/coworking/reservation/${reservation.id}`);
