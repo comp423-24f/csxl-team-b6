@@ -7,6 +7,7 @@ import { ReservationService } from '../reservation/reservation.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfileService } from 'src/app/profile/profile.service';
+import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 
 @Component({
   selector: 'app-coworking-admin',
