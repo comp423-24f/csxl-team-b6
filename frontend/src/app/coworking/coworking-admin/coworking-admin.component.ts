@@ -9,12 +9,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProfileService } from 'src/app/profile/profile.service';
 import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 import { OperatingHours } from '../coworking.models';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-coworking-admin',
-  standalone: true,
-  imports: [FormsModule],
   templateUrl: './coworking-admin.component.html',
   styleUrl: './coworking-admin.component.css'
 })
@@ -31,6 +28,7 @@ export class CoworkingAdminComponent {
     start: '',
     end: ''
   };
+  public existingOperatingHours: OperatingHours[] = [];
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
@@ -84,5 +82,12 @@ export class CoworkingAdminComponent {
   /** Reset the new operating hours form */
   resetNewOperatingHours(): void {
     this.newOperatingHours = { start: '', end: '' };
+  }
+
+  /* Store existing hours in existingOperatingHours using service */
+  ngOnInit(): void {
+    this.coworkingService.listOperatingHours().subscribe((data) => {
+      this.existingOperatingHours = data;
+    });
   }
 }

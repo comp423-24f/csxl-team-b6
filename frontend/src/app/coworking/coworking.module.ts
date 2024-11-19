@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { CoworkingRoutingModule } from './coworking-routing.module';
 import { CoworkingPageComponent } from './coworking-home/coworking-home.component';
+import { CoworkingAdminComponent } from './coworking-admin/coworking-admin.component';
 import { AmbassadorPageComponent } from './ambassador-home/ambassador-home.component';
 import { MatCardModule } from '@angular/material/card';
 import { CoworkingReservationCard } from './widgets/coworking-reservation-card/coworking-reservation-card';
@@ -33,12 +34,14 @@ import { AmbassadorRoomComponent } from './ambassador-home/ambassador-room/ambas
 import { ReservationFactsWidget } from './widgets/reservation-facts/reservation-facts.widget';
 import { DialogModule } from '@angular/cdk/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     NewReservationPageComponent,
     RoomReservationWidgetComponent,
     CoworkingPageComponent,
+    CoworkingAdminComponent,
     ReservationComponent,
     AmbassadorPageComponent,
     AmbassadorXLComponent,
@@ -77,6 +80,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatTooltipModule,
     MatTabsModule,
+    FormsModule,
     MatDialogModule
   ]
 })

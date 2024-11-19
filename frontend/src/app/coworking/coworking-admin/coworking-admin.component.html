@@ -1,26 +1,52 @@
-<div>
-    <h2>Add Operating Hours</h2>
+<mat-pane class="add-hours-box">
+    <mat-card-header>
+      <mat-card-title>Open Hours Editor</mat-card-title>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+  
     <form (ngSubmit)="createOperatingHours()">
-      <div>
-        <label for="start">Start Date and Time:</label>
-        <input
-          id="start"
+      <mat-form-field appearance="fill">
+        <mat-label>Start Date and Time:</mat-label>
+        <input matInput
+          title="start"
+          type="datetime-local"
           [(ngModel)]="newOperatingHours.start"
           name="start"
-          type="datetime-local"
+          placeholder="Start Date"
           required
         />
-      </div>
-      <div>
-        <label for="end">End Date and Time:</label>
-        <input
-          id="end"
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill">
+        <mat-label>End Date and Time:</mat-label>
+        <input matInput
+          title="end"
+          type="datetime-local"
           [(ngModel)]="newOperatingHours.end"
           name="end"
-          type="datetime-local"
+          placeholder="End Date"
           required
         />
+      </mat-form-field>
+      <div>
+        <button mat-flat-button color="primary" type="submit">Add Operating Hours</button>
+        <button mat-flat-button color="warn" type="button" (click)="resetNewOperatingHours()">Reset</button>
       </div>
-      <button type="submit">Add Operating Hours</button>
     </form>
-  </div>
+</mat-pane>
+<mat-pane class="show-operating-hours">
+    <mat-card-header>
+        <mat-card-title>Existing Hours</mat-card-title>
+    </mat-card-header>
+    <div *ngFor="let hours of existingOperatingHours" class="hours-item">
+        <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{ hours.id }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <p>Start: {{ hours.start | date: 'short' }}</p>
+            <p>End: {{ hours.end | date: 'short' }}</p>
+        </mat-card-content>
+        </mat-card>
+    </div>
+</mat-pane>
