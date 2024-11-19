@@ -33,4 +33,20 @@
         <button mat-flat-button color="warn" type="button" (click)="resetNewOperatingHours()">Reset</button>
       </div>
     </form>
-  </mat-pane>
+</mat-pane>
+<mat-pane class="show-operating-hours">
+    <mat-card-header>
+        <mat-card-title>Existing Hours</mat-card-title>
+    </mat-card-header>
+    <div *ngFor="let hours of existingOperatingHours" class="hours-item">
+        <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{ hours.id }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <p>Start: {{ hours.start | date: 'short' }}</p>
+            <p>End: {{ hours.end | date: 'short' }}</p>
+        </mat-card-content>
+        </mat-card>
+    </div>
+</mat-pane>
