@@ -9,12 +9,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProfileService } from 'src/app/profile/profile.service';
 import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 import { OperatingHours } from '../coworking.models';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-coworking-admin',
-  standalone: true,
-  imports: [FormsModule],
   templateUrl: './coworking-admin.component.html',
   styleUrl: './coworking-admin.component.css'
 })

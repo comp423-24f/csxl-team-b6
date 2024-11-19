@@ -1,26 +1,31 @@
-<div>
-    <h2>Add Operating Hours</h2>
-    <form (ngSubmit)="createOperatingHours()">
-      <div>
-        <label for="start">Start Date and Time:</label>
-        <input
-          id="start"
-          [(ngModel)]="newOperatingHours.start"
-          name="start"
-          type="datetime-local"
-          required
-        />
-      </div>
-      <div>
-        <label for="end">End Date and Time:</label>
-        <input
-          id="end"
-          [(ngModel)]="newOperatingHours.end"
-          name="end"
-          type="datetime-local"
-          required
-        />
-      </div>
-      <button type="submit">Add Operating Hours</button>
-    </form>
-  </div>
+<mat-pane class="add-hours-box" style="background-color: red;">
+    <mat-card-header>
+        <mat-card-title>Open Hours Editor</mat-card-title>
+    </mat-card-header>
+    <mat-form-field (ngSubmit)="createOperatingHours()">
+        <div>
+            <mat-label for="start">Start Date and Time:</mat-label>
+            <input matInput 
+                id="start"
+                [(ngModel)]="newOperatingHours.start"
+                name="start"
+                type="datetime-local"
+                required
+            />
+        </div>
+        <div>
+            <mat-label for="start">End Date and Time:</mat-label>
+            <input matInput 
+                id="end"
+                [(ngModel)]="newOperatingHours.end"
+                name="end"
+                type="datetime-local"
+                required
+            />
+        </div>
+        <mat-card-actions>
+            <button mat-flat-button (ngSubmit)="resetNewOperatingHours()">Reset</button>
+            <button mat-flat-button type="submit">Add Operating Hours</button>
+        </mat-card-actions>
+    </mat-form-field>
+</mat-pane>
