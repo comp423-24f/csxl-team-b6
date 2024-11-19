@@ -34,11 +34,7 @@ export class CoworkingAdminComponent {
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
-    private route: ActivatedRoute,
-    private reservationService: ReservationService,
     protected snackBar: MatSnackBar,
-    private roomReservationService: RoomReservationService,
-    private profileService: ProfileService,
     private dialog: MatDialog
   ) {}
   createOperatingHours(): void {
