@@ -6,7 +6,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy, WritableSignal, signal } from '@angular/core';
-import { Subscription, map, BehaviorSubject } from 'rxjs';
+import { Subscription, map, BehaviorSubject, Observable } from 'rxjs';
 import {
   CoworkingStatus,
   CoworkingStatusJSON,
@@ -15,7 +15,10 @@ import {
   parseCoworkingStatusJSON,
   parseReservationJSON,
   Reservation,
-  EMPTY_COWORKING_STATUS
+  EMPTY_COWORKING_STATUS,
+  OperatingHours,
+  OperatingHoursJSON,
+  parseOperatingHoursJSON
 } from './coworking.models';
 import { ProfileService } from '../profile/profile.service';
 import { Profile } from '../models.module';
@@ -104,5 +107,39 @@ export class CoworkingService implements OnDestroy {
    */
   toggleCancelExpansion(): void {
     this.isCancelExpanded.next(!this.isCancelExpanded.value);
+  }
+  /**
+   * Retrieves the list of operating hours.
+   * @returns {Observable<OperatingHours[]>}
+   */
+  listOperatingHours(): Observable<OperatingHours[]> {
+    return this.http
+      .get<OperatingHoursJSON[]>('/api/coworking/operating-hours')
+      .pipe(map((jsonArray) => jsonArray.map(parseOperatingHoursJSON)));
+  }
+
+  /**
+   * Creates new operating hours.
+   * @param operatingHours - The operating hours data to be added.
+   * @returns {Observable<OperatingHours>}
+   */
+  createOperatingHours(
+    operatingHours: OperatingHours
+  ): Observable<OperatingHours> {
+    return this.http
+      .post<OperatingHoursJSON>(
+        '/api/coworking/operating_hours',
+        operatingHours
+      )
+      .pipe(map(parseOperatingHoursJSON));
+  }
+
+  /**
+   * Deletes operating hours by ID.
+   * @param id - The ID of the operating hours to delete.
+   * @returns {Observable<any>}
+   */
+  deleteOperatingHours(id: number): Observable<any> {
+    return this.http.delete(`/api/coworking/operating-hours/${id}`);
   }
 }
