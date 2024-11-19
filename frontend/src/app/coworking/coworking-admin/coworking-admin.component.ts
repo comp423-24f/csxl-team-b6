@@ -10,11 +10,13 @@ import { ProfileService } from 'src/app/profile/profile.service';
 import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 import { OperatingHours } from '../coworking.models';
 import { FormsModule } from '@angular/forms';
+import { AddOpenHoursDialog } from '../widgets/add-open-hours-dialog/add-open-hours-dialog.widget';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-coworking-admin',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, MatIcon],
   templateUrl: './coworking-admin.component.html',
   styleUrl: './coworking-admin.component.css'
 })
@@ -27,46 +29,43 @@ export class CoworkingAdminComponent {
   };
   public operatingHoursList: WritableSignal<OperatingHours[] | undefined> =
     signal(undefined);
-  public newOperatingHours: { start: string; end: string } = {
-    start: '',
-    end: ''
-  };
+
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
     protected snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
-  createOperatingHours(): void {
-    const start = new Date(this.newOperatingHours.start);
-    const end = new Date(this.newOperatingHours.end);
 
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+  openAddHoursDialog(): void {
+    const dialogRef = this.dialog.open(AddOpenHoursDialog);
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res) {
+        this.createOperatingHours(res);
+      }
+    });
+  }
+
+  createOperatingHours(oh: OperatingHours): void {
+    if (isNaN(oh.start.getTime()) || isNaN(oh.end.getTime())) {
       this.snackBar.open('Please provide valid dates.', '', {
         duration: 2000
       });
       return;
     }
 
-    if (start >= end) {
+    if (oh.start >= oh.end) {
       this.snackBar.open('Start time must be before end time.', '', {
         duration: 2000
       });
       return;
     }
 
-    const operatingHours: OperatingHours = {
-      id: 0,
-      start,
-      end
-    };
-
-    this.coworkingService.createOperatingHours(operatingHours).subscribe({
+    this.coworkingService.createOperatingHours(oh).subscribe({
       next: () => {
         this.snackBar.open('Operating hours added successfully.', '', {
           duration: 2000
         });
-        this.resetNewOperatingHours();
       },
       error: (error) => {
         console.error('Error adding operating hours:', error);
@@ -75,10 +74,5 @@ export class CoworkingAdminComponent {
         });
       }
     });
-  }
-
-  /** Reset the new operating hours form */
-  resetNewOperatingHours(): void {
-    this.newOperatingHours = { start: '', end: '' };
   }
 }

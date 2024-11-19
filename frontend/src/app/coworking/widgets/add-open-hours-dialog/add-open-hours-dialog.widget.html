@@ -1,1 +1,27 @@
-<p>add-open-hours-dialog works!</p>
+<h2 mat-dialog-title>Add Operating Hours</h2>
+<mat-dialog-content>
+<form [formGroup]="addHoursForm">
+  <mat-form-field appearance="outline">
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate formControlName="start" placeholder="Start date">
+      <input matEndDate formControlName="end" placeholder="End date">
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field> 
+
+  <!-- <mat-form-field appearance="outline">
+  </mat-form-field> -->
+
+  <mat-dialog-actions>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="closeDialog()">
+      Add
+    </button>
+  </mat-dialog-actions>
+</form>
+</mat-dialog-content>
