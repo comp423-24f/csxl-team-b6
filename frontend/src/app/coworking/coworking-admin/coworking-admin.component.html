@@ -1,31 +1,36 @@
-<mat-pane class="add-hours-box" style="background-color: red;">
+<mat-pane class="add-hours-box">
     <mat-card-header>
-        <mat-card-title>Open Hours Editor</mat-card-title>
+      <mat-card-title>Open Hours Editor</mat-card-title>
     </mat-card-header>
-    <mat-form-field (ngSubmit)="createOperatingHours()">
-        <div>
-            <mat-label for="start">Start Date and Time:</mat-label>
-            <input matInput 
-                id="start"
-                [(ngModel)]="newOperatingHours.start"
-                name="start"
-                type="datetime-local"
-                required
-            />
-        </div>
-        <div>
-            <mat-label for="start">End Date and Time:</mat-label>
-            <input matInput 
-                id="end"
-                [(ngModel)]="newOperatingHours.end"
-                name="end"
-                type="datetime-local"
-                required
-            />
-        </div>
-        <mat-card-actions>
-            <button mat-flat-button (ngSubmit)="resetNewOperatingHours()">Reset</button>
-            <button mat-flat-button type="submit">Add Operating Hours</button>
-        </mat-card-actions>
-    </mat-form-field>
-</mat-pane>
+    <mat-divider></mat-divider>
+  
+    <form (ngSubmit)="createOperatingHours()">
+      <mat-form-field appearance="fill">
+        <mat-label>Start Date and Time:</mat-label>
+        <input matInput
+          title="start"
+          type="datetime-local"
+          [(ngModel)]="newOperatingHours.start"
+          name="start"
+          placeholder="Start Date"
+          required
+        />
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill">
+        <mat-label>End Date and Time:</mat-label>
+        <input matInput
+          title="end"
+          type="datetime-local"
+          [(ngModel)]="newOperatingHours.end"
+          name="end"
+          placeholder="End Date"
+          required
+        />
+      </mat-form-field>
+      <div>
+        <button mat-flat-button color="primary" type="submit">Add Operating Hours</button>
+        <button mat-flat-button color="warn" type="button" (click)="resetNewOperatingHours()">Reset</button>
+      </div>
+    </form>
+  </mat-pane>
