@@ -42,7 +42,6 @@ export class CoworkingAdminComponent {
     private dialog: MatDialog
   ) {}
   createOperatingHours(): void {
-    // Convert input strings to Date objects
     const start = new Date(this.newOperatingHours.start);
     const end = new Date(this.newOperatingHours.end);
 
@@ -66,20 +65,20 @@ export class CoworkingAdminComponent {
       end
     };
 
-    this.coworkingService.createOperatingHours(operatingHours).subscribe(
-      () => {
+    this.coworkingService.createOperatingHours(operatingHours).subscribe({
+      next: () => {
         this.snackBar.open('Operating hours added successfully.', '', {
           duration: 2000
         });
         this.resetNewOperatingHours();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error adding operating hours:', error);
         this.snackBar.open('Failed to add operating hours.', '', {
           duration: 2000
         });
       }
-    );
+    });
   }
 
   /** Reset the new operating hours form */

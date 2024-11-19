@@ -108,6 +108,7 @@ export class CoworkingService implements OnDestroy {
   toggleCancelExpansion(): void {
     this.isCancelExpanded.next(!this.isCancelExpanded.value);
   }
+
   /**
    * Retrieves the list of operating hours.
    * @returns {Observable<OperatingHours[]>}
@@ -131,7 +132,12 @@ export class CoworkingService implements OnDestroy {
         '/api/coworking/operating_hours',
         operatingHours
       )
-      .pipe(map(parseOperatingHoursJSON));
+      .pipe(
+        map(
+          (resp: OperatingHoursJSON): OperatingHours =>
+            parseOperatingHoursJSON(resp)
+        )
+      );
   }
 
   /**
