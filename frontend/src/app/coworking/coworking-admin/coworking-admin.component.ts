@@ -34,6 +34,7 @@ export class CoworkingAdminComponent {
   };
 
   public existingOperatingHours: OperatingHours[] = [];
+
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
