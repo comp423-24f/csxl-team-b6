@@ -115,7 +115,7 @@ export class CoworkingService implements OnDestroy {
    */
   listOperatingHours(): Observable<OperatingHours[]> {
     return this.http
-      .get<OperatingHoursJSON[]>('/api/coworking/operating-hours')
+      .get<OperatingHoursJSON[]>('/api/coworking/operating_hours')
       .pipe(map((jsonArray) => jsonArray.map(parseOperatingHoursJSON)));
   }
 
@@ -146,6 +146,6 @@ export class CoworkingService implements OnDestroy {
    * @returns {Observable<any>}
    */
   deleteOperatingHours(id: number): Observable<any> {
-    return this.http.delete(`/api/coworking/operating-hours/${id}`);
+    return this.http.delete(`/api/coworking/operating_hours/${id}`);
   }
 }

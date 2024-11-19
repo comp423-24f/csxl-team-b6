@@ -10,11 +10,12 @@ import { ProfileService } from 'src/app/profile/profile.service';
 import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 import { OperatingHours } from '../coworking.models';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-coworking-admin',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './coworking-admin.component.html',
   styleUrl: './coworking-admin.component.css'
 })
@@ -31,6 +32,7 @@ export class CoworkingAdminComponent {
     start: '',
     end: ''
   };
+
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
@@ -40,7 +42,24 @@ export class CoworkingAdminComponent {
     private roomReservationService: RoomReservationService,
     private profileService: ProfileService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.fetchOperatingHours();
+  }
+
+  fetchOperatingHours(): void {
+    this.coworkingService.listOperatingHours().subscribe({
+      next: (hours) => {
+        this.operatingHoursList.set(hours);
+      },
+      error: (error) => {
+        console.error('Error fetching operating hours:', error);
+        this.snackBar.open('Failed to load operating hours.', '', {
+          duration: 2000
+        });
+      }
+    });
+  }
+
   createOperatingHours(): void {
     const start = new Date(this.newOperatingHours.start);
     const end = new Date(this.newOperatingHours.end);
@@ -70,6 +89,7 @@ export class CoworkingAdminComponent {
         this.snackBar.open('Operating hours added successfully.', '', {
           duration: 2000
         });
+        this.fetchOperatingHours();
         this.resetNewOperatingHours();
       },
       error: (error) => {
@@ -81,7 +101,23 @@ export class CoworkingAdminComponent {
     });
   }
 
-  /** Reset the new operating hours form */
+  deleteOperatingHourById(id: number): void {
+    this.coworkingService.deleteOperatingHours(id).subscribe({
+      next: () => {
+        this.snackBar.open('Operating hour slot deleted successfully.', '', {
+          duration: 2000
+        });
+        this.fetchOperatingHours();
+      },
+      error: (error) => {
+        console.error('Error deleting operating hour:', error);
+        this.snackBar.open('Failed to delete operating hour.', '', {
+          duration: 2000
+        });
+      }
+    });
+  }
+
   resetNewOperatingHours(): void {
     this.newOperatingHours = { start: '', end: '' };
   }

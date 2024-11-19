@@ -24,11 +24,14 @@ openapi_tags = {
 
 @api.get("", response_model=Sequence[OperatingHours], tags=["Coworking"])
 def get_operating_hours(
-    start: datetime = datetime.now(),
-    end: datetime = datetime.now() + timedelta(weeks=1),
+    start: datetime = None,
+    end: datetime = None,
     operating_hours_svc: OperatingHoursService = Depends(),
 ):
     """List operating hours over a given span of dates."""
+    if start is None and end is None:
+        return operating_hours_svc.list_all()
+    
     time_range = TimeRange(start=start, end=end)
     return operating_hours_svc.schedule(time_range)
 
