@@ -1,1 +1,26 @@
-<p>coworking-admin works!</p>
+<div>
+    <h2>Add Operating Hours</h2>
+    <form (ngSubmit)="createOperatingHours()">
+      <div>
+        <label for="start">Start Date and Time:</label>
+        <input
+          id="start"
+          [(ngModel)]="newOperatingHours.start"
+          name="start"
+          type="datetime-local"
+          required
+        />
+      </div>
+      <div>
+        <label for="end">End Date and Time:</label>
+        <input
+          id="end"
+          [(ngModel)]="newOperatingHours.end"
+          name="end"
+          type="datetime-local"
+          required
+        />
+      </div>
+      <button type="submit">Add Operating Hours</button>
+    </form>
+  </div>
