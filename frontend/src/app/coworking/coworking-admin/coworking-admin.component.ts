@@ -33,6 +33,7 @@ export class CoworkingAdminComponent {
     end: ''
   };
 
+  public existingOperatingHours: OperatingHours[] = [];
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
@@ -120,5 +121,12 @@ export class CoworkingAdminComponent {
 
   resetNewOperatingHours(): void {
     this.newOperatingHours = { start: '', end: '' };
+  }
+
+  /* Store existing hours in existingOperatingHours using service */
+  ngOnInit(): void {
+    this.coworkingService.listOperatingHours().subscribe((data) => {
+      this.existingOperatingHours = data;
+    });
   }
 }

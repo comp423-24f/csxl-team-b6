@@ -1,40 +1,52 @@
-<div>
-  <h2>Add Operating Hours</h2>
-  <form (ngSubmit)="createOperatingHours()">
-    <div>
-      <label for="start">Start Date and Time:</label>
-      <input
-        id="start"
-        [(ngModel)]="newOperatingHours.start"
-        name="start"
-        type="datetime-local"
-        required
-      />
+<mat-pane class="add-hours-box">
+    <mat-card-header>
+      <mat-card-title>Open Hours Editor</mat-card-title>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+  
+    <form (ngSubmit)="createOperatingHours()">
+      <mat-form-field appearance="fill">
+        <mat-label>Start Date and Time:</mat-label>
+        <input matInput
+          title="start"
+          type="datetime-local"
+          [(ngModel)]="newOperatingHours.start"
+          name="start"
+          placeholder="Start Date"
+          required
+        />
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill">
+        <mat-label>End Date and Time:</mat-label>
+        <input matInput
+          title="end"
+          type="datetime-local"
+          [(ngModel)]="newOperatingHours.end"
+          name="end"
+          placeholder="End Date"
+          required
+        />
+      </mat-form-field>
+      <div>
+        <button mat-flat-button color="primary" type="submit">Add Operating Hours</button>
+        <button mat-flat-button color="warn" type="button" (click)="resetNewOperatingHours()">Reset</button>
+      </div>
+    </form>
+</mat-pane>
+<mat-pane class="show-operating-hours">
+    <mat-card-header>
+        <mat-card-title>Existing Hours</mat-card-title>
+    </mat-card-header>
+    <div *ngFor="let hours of existingOperatingHours" class="hours-item">
+        <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{ hours.id }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <p>Start: {{ hours.start | date: 'short' }}</p>
+            <p>End: {{ hours.end | date: 'short' }}</p>
+        </mat-card-content>
+        </mat-card>
     </div>
-    <div>
-      <label for="end">End Date and Time:</label>
-      <input
-        id="end"
-        [(ngModel)]="newOperatingHours.end"
-        name="end"
-        type="datetime-local"
-        required
-      />
-    </div>
-    <button type="submit">Add Operating Hours</button>
-  </form>
-</div>
-
-<div>
-  <h2>Manage Operating Hours</h2>
-  <ul>
-    @for (hour of operatingHoursList() || []; track hour.id) {
-      <li>
-        <span>{{ hour.start | date: 'short' }} - {{ hour.end | date: 'short' }}</span>
-        <button (click)="deleteOperatingHourById(hour.id)">Delete</button>
-      </li>
-    } @empty {
-      <li>No operating hours available.</li>
-    }
-  </ul>
-</div>
+</mat-pane>
