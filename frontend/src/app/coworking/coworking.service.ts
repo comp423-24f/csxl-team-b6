@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnDestroy, WritableSignal, signal } from '@angular/core';
 import { Subscription, map, BehaviorSubject, Observable } from 'rxjs';
 import {
@@ -113,9 +113,18 @@ export class CoworkingService implements OnDestroy {
    * Retrieves the list of operating hours.
    * @returns {Observable<OperatingHours[]>}
    */
-  listOperatingHours(): Observable<OperatingHours[]> {
+  listOperatingHours(start?: Date, end?: Date): Observable<OperatingHours[]> {
+    let params = new HttpParams();
+    if (start) {
+      params = params.set('start', start.toISOString());
+    }
+    if (end) {
+      params = params.set('end', end.toISOString());
+    }
     return this.http
-      .get<OperatingHoursJSON[]>('/api/coworking/operating_hours')
+      .get<
+        OperatingHoursJSON[]
+      >('/api/coworking/operating_hours', { params: params })
       .pipe(map((jsonArray) => jsonArray.map(parseOperatingHoursJSON)));
   }
 

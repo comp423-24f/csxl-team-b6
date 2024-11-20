@@ -126,7 +126,10 @@ export class CoworkingAdminComponent {
   }
 
   ngOnInit(): void {
-    this.coworkingService.listOperatingHours().subscribe((data) => {
+    const start = new Date();
+    const end = new Date();
+    end.setDate(end.getDate() + 7 * 8);
+    this.coworkingService.listOperatingHours(start, end).subscribe((data) => {
       this.existingOperatingHours = data;
     });
   }
