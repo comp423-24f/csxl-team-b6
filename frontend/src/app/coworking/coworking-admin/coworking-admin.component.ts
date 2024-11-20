@@ -96,7 +96,6 @@ export class CoworkingAdminComponent {
         end: end
       });
     }
-    console.log('operating hours arr: ', operatingHoursArr);
 
     operatingHoursArr.forEach((operatingHours) => {
       this.coworkingService.createOperatingHours(operatingHours).subscribe({
