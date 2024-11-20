@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -71,7 +72,7 @@ export class CoworkingAdminComponent {
       return;
     }
 
-    const operatingHoursArr = [];
+    const operatingHoursPromises = [];
     for (
       let d = new Date(startDate);
       d <= endDate;
@@ -90,29 +91,25 @@ export class CoworkingAdminComponent {
         return;
       }
 
-      operatingHoursArr.push({
-        id: 0,
-        start: start,
-        end: end
-      });
+      operatingHoursPromises.push(
+        firstValueFrom(
+          this.coworkingService.createOperatingHours({
+            id: 0,
+            start: start,
+            end: end
+          })
+        )
+      );
     }
 
-    operatingHoursArr.forEach((operatingHours) => {
-      this.coworkingService.createOperatingHours(operatingHours).subscribe({
-        next: () => {
-          this.snackBar.open('Operating hours added successfully.', '', {
-            duration: 2000
-          });
-          this.resetNewOperatingHours();
-        },
-        error: (error) => {
-          console.error('Error adding operating hours:', error);
-          this.snackBar.open('Failed to add operating hours.', '', {
-            duration: 2000
-          });
-        }
+    Promise.all(operatingHoursPromises).then(() => {
+      this.snackBar.open('Operating hours added successfully.', '', {
+        duration: 2000
       });
+      this.resetNewOperatingHours();
+      this.fetchOperatingHours();
     });
+
     this.fetchOperatingHours();
   }
 
@@ -120,8 +117,8 @@ export class CoworkingAdminComponent {
     this.newOperatingHours = {
       startDate: '',
       endDate: '',
-      startTime: '',
-      endTime: ''
+      startTime: '10:00',
+      endTime: '20:00'
     };
   }
 
