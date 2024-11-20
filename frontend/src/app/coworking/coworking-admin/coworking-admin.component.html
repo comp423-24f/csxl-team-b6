@@ -1,52 +1,58 @@
 <mat-pane class="add-hours-box">
-    <mat-card-header>
-      <mat-card-title>Open Hours Editor</mat-card-title>
-    </mat-card-header>
-    <mat-divider></mat-divider>
-  
-    <form (ngSubmit)="createOperatingHours()">
-      <mat-form-field appearance="fill">
-        <mat-label>Start Date and Time:</mat-label>
-        <input matInput
-          title="start"
-          type="datetime-local"
-          [(ngModel)]="newOperatingHours.start"
-          name="start"
-          placeholder="Start Date"
-          required
-        />
+  <mat-card-header class="card-header">
+    <mat-card-title>Add Hours</mat-card-title>
+  </mat-card-header>
+  <mat-divider></mat-divider>
+
+  <form (ngSubmit)="createOperatingHours()">
+    <mat-form-field appearance="outline" class="date-time-pickers">
+      <mat-label>Enter a date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate [(ngModel)]="newOperatingHours.startDate" name="start" placeholder="Start date" required>
+        <input matEndDate [(ngModel)]="newOperatingHours.endDate" name="end" placeholder="End date" required>
+      </mat-date-range-input>
+      <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <div id="time-picker-containers">
+      <mat-form-field appearance="outline" class="date-time-pickers">
+        <mat-label>Start Time</mat-label>
+        <input matInput type="time" [(ngModel)]="newOperatingHours.startTime" name="startTime" required>
       </mat-form-field>
   
-      <mat-form-field appearance="fill">
-        <mat-label>End Date and Time:</mat-label>
-        <input matInput
-          title="end"
-          type="datetime-local"
-          [(ngModel)]="newOperatingHours.end"
-          name="end"
-          placeholder="End Date"
-          required
-        />
+      <mat-form-field appearance="outline" class="date-time-pickers">
+        <mat-label>End Time</mat-label>
+        <input matInput type="time" [(ngModel)]="newOperatingHours.endTime" name="endTime" required>
       </mat-form-field>
-      <div>
-        <button mat-flat-button color="primary" type="submit">Add Operating Hours</button>
-        <button mat-flat-button color="warn" type="button" (click)="resetNewOperatingHours()">Reset</button>
-      </div>
-    </form>
+    </div>
+    <div id="add-hours-submit-button-container">
+    <button 
+      mat-flat-button
+      class="primary-button"
+      type="submit">
+      Add Operating Hours
+    </button>
+  </div>
+  </form>
 </mat-pane>
+
 <mat-pane class="show-operating-hours">
     <mat-card-header>
         <mat-card-title>Existing Hours</mat-card-title>
     </mat-card-header>
-    <div *ngFor="let hours of existingOperatingHours" class="hours-item">
+    <div class="hours-item">
+      @for (hours of existingOperatingHours; track hours.id) {
         <mat-card>
-        <mat-card-header>
+          <mat-card-header>
             <mat-card-title>{{ hours.id }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+          </mat-card-header>
+          <mat-card-content>
             <p>Start: {{ hours.start | date: 'short' }}</p>
             <p>End: {{ hours.end | date: 'short' }}</p>
-        </mat-card-content>
+          </mat-card-content>
         </mat-card>
+      }
     </div>
 </mat-pane>

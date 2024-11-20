@@ -1,0 +1,18 @@
+.date-time-pickers {
+  padding: 10px;
+}
+
+.card-header {
+  padding-bottom: 8px;
+}
+
+#time-pickers-container {
+  display: flex;
+  gap: 1rem;
+}
+
+#add-hours-submit-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}
