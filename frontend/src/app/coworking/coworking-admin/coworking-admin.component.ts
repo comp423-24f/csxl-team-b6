@@ -1,4 +1,4 @@
-import { Component, computed, WritableSignal, signal } from '@angular/core';
+import { Component, WritableSignal, signal } from '@angular/core';
 import { Route, Router, ActivatedRoute } from '@angular/router';
 import { permissionGuard } from 'src/app/permission.guard';
 import { CoworkingService } from '../coworking.service';
@@ -7,13 +7,7 @@ import { ReservationService } from '../reservation/reservation.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfileService } from 'src/app/profile/profile.service';
-import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 import { OperatingHours } from '../coworking.models';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-coworking-admin',
