@@ -31,8 +31,8 @@ export class CoworkingAdminComponent {
   public newOperatingHours = {
     startDate: '',
     endDate: '',
-    startTime: '',
-    endTime: ''
+    startTime: '10:00',
+    endTime: '20:00'
   };
 
   public existingOperatingHours: OperatingHours[] = [];
@@ -50,10 +50,10 @@ export class CoworkingAdminComponent {
     const startDate = new Date(this.newOperatingHours.startDate);
     const endDate = new Date(this.newOperatingHours.endDate);
 
-    const [startHours, startMinutes] = this.newOperatingHours.startTime
+    const [startHour, startMinute] = this.newOperatingHours.startTime
       .split(':')
       .map(Number);
-    const [endHours, endMinutes] = this.newOperatingHours.endTime
+    const [endHour, endMinute] = this.newOperatingHours.endTime
       .split(':')
       .map(Number);
 
@@ -78,10 +78,10 @@ export class CoworkingAdminComponent {
       d.setDate(d.getDate() + 1)
     ) {
       const start = new Date(d);
-      start.setHours(startHours, startMinutes);
+      start.setHours(startHour, startMinute);
 
       const end = new Date(d);
-      end.setHours(endHours, endMinutes);
+      end.setHours(endHour, endMinute);
 
       if (start >= end) {
         this.snackBar.open('Start time must be before end time.', '', {
