@@ -114,3 +114,8 @@ class OperatingHoursService:
         )
         self._session.delete(operating_hours_entity)
         self._session.commit()
+
+    def list_all(self) -> list[OperatingHours]:
+        """Fetch all operating hours."""
+        entities = self._session.query(OperatingHoursEntity).order_by(OperatingHoursEntity.start).all()
+        return [entity.to_model() for entity in entities]

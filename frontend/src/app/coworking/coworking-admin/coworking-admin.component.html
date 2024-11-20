@@ -52,6 +52,15 @@
             <p>Start: {{ hours.start | date: 'short' }}</p>
             <p>End: {{ hours.end | date: 'short' }}</p>
           </mat-card-content>
+          <mat-card-content>
+            <button
+            mat-flat-button
+            color="warn"
+            (click)="deleteOperatingHourById(hours.id)"
+            >
+            Delete
+          </button>
+        </mat-card-content>
         </mat-card>
       }
     </div>

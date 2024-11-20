@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -113,6 +114,22 @@ export class CoworkingAdminComponent {
           });
         }
       });
+    });
+  }
+
+  deleteOperatingHourById(id: number): void {
+    this.coworkingService.deleteOperatingHours(id).subscribe({
+      next: () => {
+        this.snackBar.open('Operating hour slot deleted successfully.', '', {
+          duration: 2000
+        });
+      },
+      error: (error) => {
+        console.error('Error deleting operating hour:', error);
+        this.snackBar.open('Failed to delete operating hour.', '', {
+          duration: 2000
+        });
+      }
     });
   }
 

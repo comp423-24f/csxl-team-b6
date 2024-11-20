@@ -55,3 +55,4 @@ def delete_operating_hours(
     """Delete operating hours for the XL."""
     operating_hours = operating_hours_svc.get_by_id(id)
     return operating_hours_svc.delete(subject, operating_hours)
+    
