@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -31,8 +32,8 @@ export class CoworkingAdminComponent {
   public newOperatingHours = {
     startDate: '',
     endDate: '',
-    startTime: '',
-    endTime: ''
+    startTime: '10:00',
+    endTime: '20:00'
   };
 
   public existingOperatingHours: OperatingHours[] = [];
@@ -50,10 +51,10 @@ export class CoworkingAdminComponent {
     const startDate = new Date(this.newOperatingHours.startDate);
     const endDate = new Date(this.newOperatingHours.endDate);
 
-    const [startHours, startMinutes] = this.newOperatingHours.startTime
+    const [startHour, startMinute] = this.newOperatingHours.startTime
       .split(':')
       .map(Number);
-    const [endHours, endMinutes] = this.newOperatingHours.endTime
+    const [endHour, endMinute] = this.newOperatingHours.endTime
       .split(':')
       .map(Number);
 
@@ -71,17 +72,17 @@ export class CoworkingAdminComponent {
       return;
     }
 
-    const operatingHoursArr = [];
+    const operatingHoursPromises = [];
     for (
       let d = new Date(startDate);
       d <= endDate;
       d.setDate(d.getDate() + 1)
     ) {
       const start = new Date(d);
-      start.setHours(startHours, startMinutes);
+      start.setHours(startHour, startMinute);
 
       const end = new Date(d);
-      end.setHours(endHours, endMinutes);
+      end.setHours(endHour, endMinute);
 
       if (start >= end) {
         this.snackBar.open('Start time must be before end time.', '', {
@@ -90,46 +91,47 @@ export class CoworkingAdminComponent {
         return;
       }
 
-      operatingHoursArr.push({
-        id: 0,
-        start: start,
-        end: end
-      });
+      operatingHoursPromises.push(
+        firstValueFrom(
+          this.coworkingService.createOperatingHours({
+            id: 0,
+            start: start,
+            end: end
+          })
+        )
+      );
     }
 
-    operatingHoursArr.forEach((operatingHours) => {
-      this.coworkingService.createOperatingHours(operatingHours).subscribe({
-        next: () => {
-          this.snackBar.open('Operating hours added successfully.', '', {
-            duration: 2000
-          });
-          this.resetNewOperatingHours();
-        },
-        error: (error) => {
-          console.error('Error adding operating hours:', error);
-          this.snackBar.open('Failed to add operating hours.', '', {
-            duration: 2000
-          });
-        }
+    Promise.all(operatingHoursPromises).then(() => {
+      this.snackBar.open('Operating hours added successfully.', '', {
+        duration: 2000
       });
+      this.resetNewOperatingHours();
+      this.fetchOperatingHours();
     });
+
+    this.fetchOperatingHours();
   }
 
   resetNewOperatingHours(): void {
     this.newOperatingHours = {
       startDate: '',
       endDate: '',
-      startTime: '',
-      endTime: ''
+      startTime: '10:00',
+      endTime: '20:00'
     };
   }
 
-  ngOnInit(): void {
+  fetchOperatingHours(): void {
     const start = new Date();
     const end = new Date();
     end.setDate(end.getDate() + 7 * 8);
     this.coworkingService.listOperatingHours(start, end).subscribe((data) => {
       this.existingOperatingHours = data;
     });
+  }
+
+  ngOnInit(): void {
+    this.fetchOperatingHours();
   }
 }
