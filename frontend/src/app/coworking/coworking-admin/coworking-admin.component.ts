@@ -1,4 +1,4 @@
-import { Component, computed, WritableSignal, signal } from '@angular/core';
+import { Component, WritableSignal, signal } from '@angular/core';
 import { Route, Router, ActivatedRoute } from '@angular/router';
 import { permissionGuard } from 'src/app/permission.guard';
 import { CoworkingService } from '../coworking.service';
@@ -7,13 +7,8 @@ import { ReservationService } from '../reservation/reservation.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfileService } from 'src/app/profile/profile.service';
-import { NagivationAdminGearService } from '../../navigation/navigation-admin-gear.service';
 import { OperatingHours } from '../coworking.models';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -37,6 +32,8 @@ export class CoworkingAdminComponent {
   };
 
   public existingOperatingHours: OperatingHours[] = [];
+  private subscriptions: Subscription[] = [];
+
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
@@ -113,6 +110,24 @@ export class CoworkingAdminComponent {
     this.fetchOperatingHours();
   }
 
+  deleteOperatingHourById(id: number): void {
+    const deleteSub = this.coworkingService.deleteOperatingHours(id).subscribe({
+      next: () => {
+        this.snackBar.open('Operating hour slot deleted successfully.', '', {
+          duration: 2000
+        });
+        this.fetchOperatingHours();
+      },
+      error: (error) => {
+        console.error('Error deleting operating hour:', error);
+        this.snackBar.open('Failed to delete operating hour.', '', {
+          duration: 2000
+        });
+      }
+    });
+    this.subscriptions.push(deleteSub);
+  }
+
   resetNewOperatingHours(): void {
     this.newOperatingHours = {
       startDate: '',
@@ -123,15 +138,23 @@ export class CoworkingAdminComponent {
   }
 
   fetchOperatingHours(): void {
-    const start = new Date();
-    const end = new Date();
-    end.setDate(end.getDate() + 7 * 8);
-    this.coworkingService.listOperatingHours(start, end).subscribe((data) => {
-      this.existingOperatingHours = data;
-    });
+    const fetchSub = this.coworkingService
+      .listOperatingHours(
+        new Date(),
+        new Date(new Date().setDate(new Date().getDate() + 7 * 8))
+      )
+      .subscribe((data) => {
+        this.existingOperatingHours = data;
+      });
+
+    this.subscriptions.push(fetchSub);
   }
 
   ngOnInit(): void {
     this.fetchOperatingHours();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }
