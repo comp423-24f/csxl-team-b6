@@ -1,20 +1,72 @@
+# Technical Specification Document - SP01
 
-# Technical Specifications - SP01
+## I. Descriptions
 
-I) We modified the GET API under the route /api/coworking/operating_hours in order to correct an existing mistake in the fastAPI routing. The GET api, when called from the frontend service, would link to /api/coworking/operating-hours instead of the correct link above, creating 404 error. With this modification, we can add new hours from the frontend service properly. The model was unchanged as a result of these updates, as the data was still sent in the same format as before.
+Our feature is purely a front-end concern. There was no modification to the existing API routes. The changes we made enhance the UI for interacting with the same operating hours API routes.
 
-II) We chose to use the existing entity format for storing operating hours, which has the following format:
-  Id - Unique identifier for the set of hours
-  Start - Start date and time for hours, stored as dateTime object
-  End - End date and time for hours, stored as dateTime object
-	With future development, we will continue to use this format, as it encapsulates all of the necessary information we need to view, create, edit, and delete operating hours. 
+### API Route: `/api/coworking/operating_hours`
 
+```json
+[
+  {
+    "id": 1,
+    "start": "2024-11-20T10:00:00",
+    "end": "2024-11-20T20:00:00"
+  },
+  {
+    "id": 2,
+    "start": "2024-11-21T10:00:00",
+    "end": "2024-11-21T20:00:00"
+  }
+]
+```
 
-III) We chose to use a start and end time dropdown list over having chips for each day of the week because the old design choice had an logic issue where the user would be able to select a date range with days of the week that didn’t match. We also opted to use a WritableSignal instead of a standard array because doing so allows us to take advantage of Angular’s signal system, enabling the operatingHoursList to be updated reactively.
+#### Query Parameters:
 
-IV) The files we edited/added include: 
-  1. frontend/src/app/coworking/coworking-admin/coworking-admin.component.css - Added classes for styling the add hours submit button, and our date pickers.
-  2. frontend/src/app/coworking/coworking-admin/coworking-admin.component.html - This is where we structured the content of our new admin operating hours component using material UI. Includes a ngForm element that takes in a start and end date from user input, as well as a date picker element.
-  3. frontend/src/app/coworking/coworking-admin/coworking-admin.component.ts - This is where we defined the component methods that our frontend UI would call on startup and on button presses. For startup, we created a fetchOperatingHours() method that returns the existing operating hours in the database as an array, displaying them on the UI. This method is also called after hours are submitted, so that the view updates dynamically upon hour submission. We also created a createOperatingHours() in order to gather the user data inputted through the view, and pass that data to the existing fastAPI architecture (using a POST call) to add to the operating hours database. We also included data validation to ensure that the inputted start and end date are a valid time interval. Finally, we created a resetOperatingHours() function in order to clear the user inputs in the dateTime picker once the hours were successfully submitted, 
-  4. frontend/src/app/coworking/coworking.service.ts - In the coworking module file, we made a small addition to the ng directive in order to include our page as a component that imports all of the material UI components. This allowed us to utilize angular’s material design elements in our HTML file.
-  5. frontend/src/app/coworking/coworking.module.ts - We made a modification to the coworking service file to increase the time intervals which were returned from the database when a GET operation was performed. This allowed the webpage to display existing hours up to 2 months into the future, rather than one week. 
+- `start` (optional): Start date and time
+- `end` (optional): End date and time
+
+#### Usage in the Feature:
+
+In our feature, this endpoint is used to fetch the operating hours from the db to show them in the admin panel. The query parameters `start` and `end` filter the operating hours within a specific date range.
+
+## II. Model Representation
+
+We are relying on the existing entity format for open hours:
+
+- **id** - Unique identifier for the set of hours.
+- **start** - Coworking open time, stored as a `dateTime`.
+- **end** - Coworking close time, stored as `dateTime`.
+
+This entity has all the necessary information to view open hours.
+
+```json
+{
+  "id": 1,
+  "start": "2024-11-21T10:00:00",
+  "end": "2024-11-21T20:00:00"
+}
+```
+
+The database schema for operating hours includes:
+
+- `id` (Primary Key)
+- `start` (DateTime)
+- `end` (DateTime)
+
+## III. Design Decisions
+
+### UX
+
+We chose to use a start and end time dropdown list over having chips for each day of the week because the old design has logical issues when selecting a date range. This new design ensures users select a valid date range and seperate time interval, even if it may take longer to input into then the chips.
+
+### Technical
+
+We decided to fetch operating hours once during component creation and when new hours are added. This reduces the number of API calls versus fetching periodically. It's probably rare that multiple people add hours at the same time, so we think the trade-off is worth it.
+
+## IV. Development Concerns
+
+- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.ts`: Contains the logic for parsing user input into operating hours and calls injected coworking service for fetching/adding operating hours.
+- `frontend/src/app/coworking/coworking.service.ts`: Service file uses Angular HTTP client to interact with the backend API, fetching and adding open hours.
+- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.html`: Defines the UI structure for the admin panel.
+- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.css`: Defines a few custom styles we added.
