@@ -6,7 +6,7 @@
   padding-bottom: 8px;
 }
 
-#time-pickers-container {
+#time-picker-containers {
   display: flex;
   gap: 1rem;
 }
@@ -15,4 +15,21 @@
   display: flex;
   justify-content: flex-end;
   padding: 10px;
+}
+
+.hours-card {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px 8px;
+}
+
+.delete-button {
+  margin: 0;
+  min-width: 80px;
 }
