@@ -138,11 +138,15 @@ export class CoworkingAdminComponent {
   }
 
   fetchOperatingHours(): void {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    // jsut going to default to 8 weeks for now
+    end.setDate(start.getDate() + 7 * 8);
+    end.setHours(23, 59, 59, 999);
+
     const fetchSub = this.coworkingService
-      .listOperatingHours(
-        new Date(),
-        new Date(new Date().setDate(new Date().getDate() + 7 * 8))
-      )
+      .listOperatingHours(start, end)
       .subscribe((data) => {
         this.existingOperatingHours = data;
       });
