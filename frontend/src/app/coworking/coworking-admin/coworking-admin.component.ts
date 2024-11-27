@@ -26,7 +26,12 @@ export class CoworkingAdminComponent {
     startTime: '10:00',
     endTime: '20:00'
   };
-  protected displayedColumns: string[] = ['id', 'date', 'startTime', 'endTime'];
+  protected displayedColumns: string[] = [
+    'select',
+    'date',
+    'startTime',
+    'endTime'
+  ];
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
 
   protected selection: SelectionModel<OperatingHours>;
@@ -153,6 +158,18 @@ export class CoworkingAdminComponent {
       timeZone: 'America/New_York'
     };
     return date.toLocaleString('en-us', options);
+  }
+
+  isAllSelected() {
+    return this.selection.selected.length == this.dataSource.data.length;
+  }
+
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.dataSource.data.forEach((row) => this.selection.select(row));
+    }
   }
 
   ngOnInit(): void {

@@ -62,9 +62,20 @@
 </mat-pane>
 <mat-card-content>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>No.</th>
-      <td mat-cell *matCellDef="let oh">{{oh.id}}</td>
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+                        <span class="mdc-list-item__primary-text">No.</span>
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)">
+                      <span class="mdc-list-item__primary-text">{{ row.id }}</span>
+        </mat-checkbox>
+      </td>
     </ng-container>
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef>Date</th>
