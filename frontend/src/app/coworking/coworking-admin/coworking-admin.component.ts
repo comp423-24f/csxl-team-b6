@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProfileService } from 'src/app/profile/profile.service';
 import { OperatingHours } from '../coworking.models';
 import { firstValueFrom, Subscription } from 'rxjs';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -22,29 +23,20 @@ export class CoworkingAdminComponent {
     title: 'Coworking Hours Editor',
     canActivate: [permissionGuard('coworking.*', '*')]
   };
-  public operatingHoursList: WritableSignal<OperatingHours[] | undefined> =
-    signal(undefined);
-  public newOperatingHours = {
+  protected newOperatingHours = {
     startDate: '',
     endDate: '',
     startTime: '10:00',
     endTime: '20:00'
   };
-
-  public existingOperatingHours: OperatingHours[] = [];
+  protected displayedColumns: string[] = ['id', 'date', 'startTime', 'endTime'];
   private subscriptions: Subscription[] = [];
-
-  displayedColumns: string[] = ['id', 'date', 'startTime', 'endTime'];
+  protected existingOperatingHours: OperatingHours[] = [];
 
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
-    private route: ActivatedRoute,
-    private reservationService: ReservationService,
-    protected snackBar: MatSnackBar,
-    private roomReservationService: RoomReservationService,
-    private profileService: ProfileService,
-    private dialog: MatDialog
+    protected snackBar: MatSnackBar
   ) {}
   createOperatingHours(): void {
     const startDate = new Date(this.newOperatingHours.startDate);
