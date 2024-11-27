@@ -61,7 +61,7 @@
   </mat-card-header>
 </mat-pane>
 <mat-card-content>
-  <table mat-table [dataSource]="existingOperatingHours" class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef>No.</th>
       <td mat-cell *matCellDef="let oh">{{oh.id}}</td>
@@ -82,3 +82,4 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </mat-card-content>
+

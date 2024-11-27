@@ -1,15 +1,12 @@
-import { Component, WritableSignal, signal } from '@angular/core';
-import { Route, Router, ActivatedRoute } from '@angular/router';
+import { Component } from '@angular/core';
+import { Route, Router } from '@angular/router';
 import { permissionGuard } from 'src/app/permission.guard';
 import { CoworkingService } from '../coworking.service';
-import { RoomReservationService } from '../room-reservation/room-reservation.service';
-import { ReservationService } from '../reservation/reservation.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { ProfileService } from 'src/app/profile/profile.service';
 import { OperatingHours } from '../coworking.models';
-import { forkJoin, Observable, Subscription } from 'rxjs';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { forkJoin, Observable } from 'rxjs';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -30,13 +27,17 @@ export class CoworkingAdminComponent {
     endTime: '20:00'
   };
   protected displayedColumns: string[] = ['id', 'date', 'startTime', 'endTime'];
-  protected existingOperatingHours: OperatingHours[] = [];
+  protected dataSource = new MatTableDataSource<OperatingHours>([]);
+
+  protected selection: SelectionModel<OperatingHours>;
 
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
     protected snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.selection = new SelectionModel<OperatingHours>(true, []);
+  }
   createOperatingHours(): void {
     const startDate = new Date(this.newOperatingHours.startDate);
     const endDate = new Date(this.newOperatingHours.endDate);
@@ -133,6 +134,17 @@ export class CoworkingAdminComponent {
     };
   }
 
+  fetchOperatingHours(): void {
+    this.coworkingService
+      .listOperatingHours(
+        new Date(),
+        new Date(new Date().setDate(new Date().getDate() + 7 * 8))
+      )
+      .subscribe((data) => {
+        this.dataSource.data = data;
+      });
+  }
+
   formatTableTime(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
@@ -141,17 +153,6 @@ export class CoworkingAdminComponent {
       timeZone: 'America/New_York'
     };
     return date.toLocaleString('en-us', options);
-  }
-
-  fetchOperatingHours(): void {
-    this.coworkingService
-      .listOperatingHours(
-        new Date(),
-        new Date(new Date().setDate(new Date().getDate() + 7 * 8))
-      )
-      .subscribe((data) => {
-        this.existingOperatingHours = data;
-      });
   }
 
   ngOnInit(): void {
