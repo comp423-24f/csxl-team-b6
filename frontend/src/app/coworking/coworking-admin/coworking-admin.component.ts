@@ -33,7 +33,6 @@ export class CoworkingAdminComponent {
     'endTime'
   ];
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
-
   protected selection: SelectionModel<OperatingHours>;
 
   constructor(
@@ -55,11 +54,14 @@ export class CoworkingAdminComponent {
       .split(':')
       .map(Number);
 
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    if (isNaN(startDate.getTime())) {
       this.snackBar.open('Please provide valid dates.', '', {
         duration: 2000
       });
       return;
+    }
+    if (isNaN(endDate.getTime())) {
+      endDate.setTime(startDate.getTime());
     }
 
     if (startDate > endDate) {
@@ -155,6 +157,7 @@ export class CoworkingAdminComponent {
     };
   }
 
+  //   fetch will take start and end as params from UI after we add table date picker
   fetchOperatingHours(): void {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
@@ -179,11 +182,11 @@ export class CoworkingAdminComponent {
     return date.toLocaleString('en-us', options);
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     return this.selection.selected.length == this.dataSource.data.length;
   }
 
-  toggleAllRows() {
+  toggleAllRows(): void {
     if (this.isAllSelected()) {
       this.selection.clear();
     } else {
