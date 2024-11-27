@@ -34,6 +34,8 @@ export class CoworkingAdminComponent {
   public existingOperatingHours: OperatingHours[] = [];
   private subscriptions: Subscription[] = [];
 
+  displayedColumns: string[] = ['id', 'date', 'startTime', 'endTime'];
+
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
@@ -135,6 +137,16 @@ export class CoworkingAdminComponent {
       startTime: '10:00',
       endTime: '20:00'
     };
+  }
+
+  formatTableTime(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+      timeZone: 'America/New_York'
+    };
+    return date.toLocaleString('en-us', options);
   }
 
   fetchOperatingHours(): void {

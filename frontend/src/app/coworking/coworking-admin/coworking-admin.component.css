@@ -33,3 +33,7 @@
   margin: 0;
   min-width: 80px;
 }
+
+#existing-hours mat-card-header {
+  padding-bottom: 10px;
+}
