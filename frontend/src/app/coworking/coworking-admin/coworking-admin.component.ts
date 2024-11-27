@@ -105,16 +105,18 @@ export class CoworkingAdminComponent {
     });
   }
 
-  deleteOperatingHourById(id: number): void {
-    this.coworkingService.deleteOperatingHours(id).subscribe({
+  deleteOperatingHours(ids: number[]): void {
+    const ohObservables = ids.map((id) =>
+      this.coworkingService.deleteOperatingHours(id)
+    );
+    forkJoin(ohObservables).subscribe({
       next: () => {
-        this.snackBar.open('Operating hour slot deleted successfully.', '', {
+        this.snackBar.open('Operating hours deleted successfully.', '', {
           duration: 2000
         });
         this.fetchOperatingHours();
       },
       error: (error) => {
-        console.error('Error deleting operating hour:', error);
         this.snackBar.open('Failed to delete operating hour.', '', {
           duration: 2000
         });
