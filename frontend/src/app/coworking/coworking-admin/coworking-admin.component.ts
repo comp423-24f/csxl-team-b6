@@ -43,6 +43,7 @@ export class CoworkingAdminComponent {
   ) {
     this.selection = new SelectionModel<OperatingHours>(true, []);
   }
+
   createOperatingHours(): void {
     const startDate = new Date(this.newOperatingHours.startDate);
     const endDate = new Date(this.newOperatingHours.endDate);
@@ -63,6 +64,16 @@ export class CoworkingAdminComponent {
 
     if (startDate > endDate) {
       this.snackBar.open('Start time must be before end time.', '', {
+        duration: 2000
+      });
+      return;
+    }
+
+    startDate.setHours(0, 0, 0, 0);
+    const currDate = new Date();
+    currDate.setHours(0, 0, 0, 0);
+    if (startDate < currDate) {
+      this.snackBar.open('Start date cannot be in the past.', '', {
         duration: 2000
       });
       return;
@@ -95,20 +106,25 @@ export class CoworkingAdminComponent {
       );
     }
 
-    forkJoin(ohObservables).subscribe({
-      next: () => {
-        this.snackBar.open('Operating hours added successfully.', '', {
-          duration: 2000
-        });
+    forkJoin(ohObservables)
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Operating hours added successfully.', '', {
+            duration: 2000
+          });
+        },
+        error: (error) => {
+          this.snackBar.open('An error occurred while adding hours.', '', {
+            duration: 2000
+          });
+          this.resetNewOperatingHours();
+          this.fetchOperatingHours();
+        }
+      })
+      .add(() => {
         this.resetNewOperatingHours();
         this.fetchOperatingHours();
-      },
-      error: (error) => {
-        this.snackBar.open('Failed to create operating hours.', '', {
-          duration: 2000
-        });
-      }
-    });
+      });
   }
 
   deleteOperatingHours(): void {
