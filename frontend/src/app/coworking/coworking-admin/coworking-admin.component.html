@@ -55,25 +55,35 @@
   </form>
 </mat-pane>
 
-<mat-pane id="existing-hours">
-  <mat-card-header>
+<mat-pane>
+  <mat-card-header id="header-container">
     <mat-card-title>Existing Hours</mat-card-title>
+    <div id="header-buttons">
+      <button mat-icon-button>
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteOperatingHours()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
   </mat-card-header>
 </mat-pane>
 <mat-card-content>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)="$event ? toggleAllRows() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()">
-                        <span class="mdc-list-item__primary-text">No.</span>
+        <mat-checkbox
+          (change)="$event ? toggleAllRows() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+          <span class="mdc-list-item__primary-text">No.</span>
         </mat-checkbox>
       </th>
       <td mat-cell *matCellDef="let row">
-        <mat-checkbox (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)">
-                      <span class="mdc-list-item__primary-text">{{ row.id }}</span>
+        <mat-checkbox
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)">
+          <span class="mdc-list-item__primary-text">{{ row.id }}</span>
         </mat-checkbox>
       </td>
     </ng-container>
@@ -93,4 +103,3 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </mat-card-content>
-

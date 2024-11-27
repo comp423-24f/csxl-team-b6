@@ -111,9 +111,9 @@ export class CoworkingAdminComponent {
     });
   }
 
-  deleteOperatingHours(ids: number[]): void {
-    const ohObservables = ids.map((id) =>
-      this.coworkingService.deleteOperatingHours(id)
+  deleteOperatingHours(): void {
+    const ohObservables = this.selection.selected.map((row) =>
+      this.coworkingService.deleteOperatingHours(row.id)
     );
     forkJoin(ohObservables).subscribe({
       next: () => {
@@ -140,6 +140,7 @@ export class CoworkingAdminComponent {
   }
 
   fetchOperatingHours(): void {
+    this.selection.clear();
     this.coworkingService
       .listOperatingHours(
         new Date(),
