@@ -100,8 +100,6 @@ export class CoworkingAdminComponent {
       this.resetNewOperatingHours();
       this.fetchOperatingHours();
     });
-
-    this.fetchOperatingHours();
   }
 
   deleteOperatingHourById(id: number): void {
