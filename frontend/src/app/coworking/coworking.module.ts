@@ -35,6 +35,7 @@ import { ReservationFactsWidget } from './widgets/reservation-facts/reservation-
 import { DialogModule } from '@angular/cdk/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { FormsModule } from '@angular/forms';
     MatTooltipModule,
     MatTabsModule,
     FormsModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCheckboxModule
   ]
 })
 export class CoworkingModule {}

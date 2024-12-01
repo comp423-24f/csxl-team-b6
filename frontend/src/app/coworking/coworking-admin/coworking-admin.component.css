@@ -17,19 +17,14 @@
   padding: 10px;
 }
 
-.hours-card {
-  position: relative;
-  margin-bottom: 16px;
-  padding: 16px;
-}
-
-.card-actions {
+#header-container {
   display: flex;
-  justify-content: flex-end;
-  padding: 0 16px 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
 }
 
-.delete-button {
-  margin: 0;
-  min-width: 80px;
+#header-buttons {
+  display: flex;
+  gap: 1rem;
 }
