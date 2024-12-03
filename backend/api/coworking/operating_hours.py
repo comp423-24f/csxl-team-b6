@@ -2,7 +2,7 @@
 
 This API manages the Operating Hours of the XL."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Sequence
 from fastapi import APIRouter, Depends, Body
 from ..authentication import registered_user
@@ -66,4 +66,6 @@ def edit_operating_hours(
 ):
     """Edit operating hours for the XL."""
     operating_hours = operating_hours_svc.get_by_id(id)
+    operating_hours_range.start = operating_hours_range.start.astimezone(timezone.utc)
+    operating_hours_range.end = operating_hours_range.end.astimezone(timezone.utc)
     return operating_hours_svc.update(subject, operating_hours, operating_hours_range)
