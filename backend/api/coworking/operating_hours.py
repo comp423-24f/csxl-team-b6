@@ -4,7 +4,7 @@ This API manages the Operating Hours of the XL."""
 
 from datetime import datetime, timedelta
 from typing import Sequence
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 from ..authentication import registered_user
 from ...models import User
 from ...models.coworking import OperatingHours, TimeRange
@@ -55,3 +55,15 @@ def delete_operating_hours(
     """Delete operating hours for the XL."""
     operating_hours = operating_hours_svc.get_by_id(id)
     return operating_hours_svc.delete(subject, operating_hours)
+
+
+@api.put("/{id}", response_model=OperatingHours, tags=["Coworking"])
+def edit_operating_hours(
+    id: int,
+    operating_hours_range: TimeRange = Body(...),
+    subject: User = Depends(registered_user),
+    operating_hours_svc: OperatingHoursService = Depends(),
+):
+    """Edit operating hours for the XL."""
+    operating_hours = operating_hours_svc.get_by_id(id)
+    return operating_hours_svc.update(subject, operating_hours, operating_hours_range)
