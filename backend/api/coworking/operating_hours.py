@@ -60,7 +60,7 @@ def delete_operating_hours(
 @api.put("/{id}", response_model=OperatingHours, tags=["Coworking"])
 def edit_operating_hours(
     id: int,
-    operating_hours_range: TimeRange = Body(...),
+    operating_hours_range: TimeRange,
     subject: User = Depends(registered_user),
     operating_hours_svc: OperatingHoursService = Depends(),
 ):
