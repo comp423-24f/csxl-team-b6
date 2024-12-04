@@ -35,7 +35,9 @@ export class CoworkingAdminComponent {
     'endTime'
   ];
   protected data = {
-    selectedID: 0
+    selectedID: 0,
+    startTime: '',
+    endTime: ''
   };
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
@@ -61,9 +63,6 @@ export class CoworkingAdminComponent {
         duration: 2000
       });
       return false;
-    }
-    if (isNaN(endDate.getTime())) {
-      endDate.setTime(startDate.getTime());
     }
 
     if (startDate > endDate) {
@@ -94,7 +93,9 @@ export class CoworkingAdminComponent {
     const [endHour, endMinute] = this.newOperatingHours.endTime
       .split(':')
       .map(Number);
-
+    if (isNaN(endDate.getTime())) {
+      endDate.setTime(startDate.getTime());
+    }
     if (!this.validateHours(startDate, endDate)) {
       return;
     }
@@ -176,8 +177,13 @@ export class CoworkingAdminComponent {
     if (!this.validateHours(startDate, endDate)) {
       return;
     } else {
+      var time = {
+        id: this.data.selectedID,
+        start: startDate,
+        end: endDate
+      };
       this.coworkingService
-        .editOperatingHours(this.data.selectedID, startDate, endDate)
+        .editOperatingHours(this.data.selectedID, time)
         .subscribe({
           next: () => {
             this.snackBar.open('Operating hours edited successfully.', '', {
