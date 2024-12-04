@@ -4,9 +4,11 @@ import { permissionGuard } from 'src/app/permission.guard';
 import { CoworkingService } from '../coworking.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OperatingHours } from '../coworking.models';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
+import { ViewChild, TemplateRef } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -32,33 +34,33 @@ export class CoworkingAdminComponent {
     'startTime',
     'endTime'
   ];
+  protected data = {
+    selectedID: 0
+  };
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
+  @ViewChild('editDialog') dialogTemplate!: TemplateRef<any>;
 
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
+    private dialog: MatDialog,
     protected snackBar: MatSnackBar
   ) {
     this.selection = new SelectionModel<OperatingHours>(true, []);
   }
 
-  createOperatingHours(): void {
-    const startDate = new Date(this.newOperatingHours.startDate);
-    const endDate = new Date(this.newOperatingHours.endDate);
+  ngAfterViewInit() {
+    // Safe to use @ViewChild after the view has been initialized
+    console.log('Dialog Template:', this.dialogTemplate);
+  }
 
-    const [startHour, startMinute] = this.newOperatingHours.startTime
-      .split(':')
-      .map(Number);
-    const [endHour, endMinute] = this.newOperatingHours.endTime
-      .split(':')
-      .map(Number);
-
+  validateHours(startDate: Date, endDate: Date): boolean {
     if (isNaN(startDate.getTime())) {
       this.snackBar.open('Please provide valid dates.', '', {
         duration: 2000
       });
-      return;
+      return false;
     }
     if (isNaN(endDate.getTime())) {
       endDate.setTime(startDate.getTime());
@@ -68,7 +70,7 @@ export class CoworkingAdminComponent {
       this.snackBar.open('Start time must be before end time.', '', {
         duration: 2000
       });
-      return;
+      return false;
     }
 
     startDate.setHours(0, 0, 0, 0);
@@ -78,6 +80,22 @@ export class CoworkingAdminComponent {
       this.snackBar.open('Start date cannot be in the past.', '', {
         duration: 2000
       });
+      return false;
+    }
+    return true;
+  }
+
+  createOperatingHours(): void {
+    const startDate = new Date(this.newOperatingHours.startDate);
+    const endDate = new Date(this.newOperatingHours.endDate);
+    const [startHour, startMinute] = this.newOperatingHours.startTime
+      .split(':')
+      .map(Number);
+    const [endHour, endMinute] = this.newOperatingHours.endTime
+      .split(':')
+      .map(Number);
+
+    if (!this.validateHours(startDate, endDate)) {
       return;
     }
 
@@ -127,6 +145,53 @@ export class CoworkingAdminComponent {
         this.resetNewOperatingHours();
         this.fetchOperatingHours();
       });
+  }
+
+  openEditWindow(): void {
+    if (this.selection.selected.length != 1) {
+      this.snackBar.open(
+        'Please select a single entry of operating hours to edit.',
+        '',
+        {
+          duration: 2000
+        }
+      );
+    } else {
+      this.data.selectedID = this.selection.selected[0].id;
+
+      of(this.data.selectedID).subscribe({
+        next: () => {
+          this.dialog.open(this.dialogTemplate, {
+            width: '400px'
+          });
+        }
+      });
+    }
+  }
+
+  editOperatingHours(): void {
+    const startDate = new Date(this.newOperatingHours.startDate);
+    const endDate = new Date(this.newOperatingHours.endDate);
+
+    if (!this.validateHours(startDate, endDate)) {
+      return;
+    } else {
+      this.coworkingService
+        .editOperatingHours(this.data.selectedID, startDate, endDate)
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Operating hours edited successfully.', '', {
+              duration: 2000
+            });
+            this.fetchOperatingHours();
+          },
+          error: (error) => {
+            this.snackBar.open('Failed to edit operating hours.', '', {
+              duration: 2000
+            });
+          }
+        });
+    }
   }
 
   deleteOperatingHours(): void {

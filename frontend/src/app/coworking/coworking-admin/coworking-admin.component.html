@@ -59,7 +59,7 @@
   <mat-card-header id="header-container">
     <mat-card-title>Existing Hours</mat-card-title>
     <div id="header-buttons">
-      <button mat-icon-button>
+      <button mat-icon-button (click)="openEditWindow()">
         <mat-icon>edit</mat-icon>
       </button>
       <button mat-icon-button (click)="deleteOperatingHours()">
@@ -103,3 +103,61 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </mat-card-content>
+
+<ng-template #editDialog>
+
+  <mat-card-header class="card-header">
+    <mat-card-title>Editing Hour #{{ data.selectedID }}</mat-card-title>
+  </mat-card-header>
+  <mat-divider></mat-divider>
+
+  <form (ngSubmit)="editOperatingHours()">
+    <mat-form-field appearance="outline" class="date-time-pickers">
+      <mat-label>Enter a date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input
+          matStartDate
+          [(ngModel)]="newOperatingHours.startDate"
+          name="startDate"
+          placeholder="Start date"
+          required />
+        <input
+          matEndDate
+          [(ngModel)]="newOperatingHours.endDate"
+          name="endDate"
+          placeholder="End date"
+          required />
+      </mat-date-range-input>
+      <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <div id="time-picker-containers">
+      <mat-form-field appearance="outline" class="date-time-pickers">
+        <mat-label>Start Time</mat-label>
+        <input
+          matInput
+          type="time"
+          [(ngModel)]="newOperatingHours.startTime"
+          name="startTime"
+          required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-time-pickers">
+        <mat-label>End Time</mat-label>
+        <input
+          matInput
+          type="time"
+          [(ngModel)]="newOperatingHours.endTime"
+          name="endTime"
+          required />
+      </mat-form-field>
+    </div>
+    <div id="add-hours-submit-button-container">
+      <button mat-flat-button class="primary-button" type="submit">
+        Edit Operating Hours
+      </button>
+    </div>
+  </form>
+</ng-template>
