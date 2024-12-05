@@ -117,13 +117,13 @@
       <mat-date-range-input [rangePicker]="picker">
         <input
           matStartDate
-          [(ngModel)]="newOperatingHours.startDate"
+          [(ngModel)]="data.startDate"
           name="startDate"
           placeholder="Start date"
           required />
         <input
           matEndDate
-          [(ngModel)]="newOperatingHours.endDate"
+          [(ngModel)]="data.endDate"
           name="endDate"
           placeholder="End date"
           required />
@@ -139,7 +139,7 @@
         <input
           matInput
           type="time"
-          [(ngModel)]="newOperatingHours.startTime"
+          [(ngModel)]="data.startTime"
           name="startTime"
           required />
       </mat-form-field>
@@ -149,7 +149,7 @@
         <input
           matInput
           type="time"
-          [(ngModel)]="newOperatingHours.endTime"
+          [(ngModel)]="data.endTime"
           name="endTime"
           required />
       </mat-form-field>

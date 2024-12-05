@@ -36,6 +36,8 @@ export class CoworkingAdminComponent {
   ];
   protected data = {
     selectedID: 0,
+    startDate: '',
+    endDate: '',
     startTime: '',
     endTime: ''
   };
@@ -159,6 +161,19 @@ export class CoworkingAdminComponent {
       );
     } else {
       this.data.selectedID = this.selection.selected[0].id;
+      this.data.startDate = this.selection.selected[0].start
+        .toISOString()
+        .split('T')[0];
+      this.data.endDate = this.selection.selected[0].end
+        .toISOString()
+        .split('T')[0];
+
+      this.data.startTime = this.formatTableTime(
+        this.selection.selected[0].start
+      ).split(' ')[0];
+      this.data.endTime = this.formatTableTime(
+        this.selection.selected[0].end
+      ).split(' ')[0];
 
       of(this.data.selectedID).subscribe({
         next: () => {
@@ -171,14 +186,32 @@ export class CoworkingAdminComponent {
   }
 
   editOperatingHours(): void {
-    const startDate = new Date(this.newOperatingHours.startDate);
-    const endDate = new Date(this.newOperatingHours.endDate);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+      timeZone: 'America/New_York'
+    };
+
+    var startDate = new Date(this.data.startDate);
+    var endDate = new Date(this.data.endDate);
+    const [startHour, startMinute] = this.data.startTime.split(':').map(Number);
+    const [endHour, endMinute] = this.data.endTime.split(':').map(Number);
+    startDate.setHours(startHour);
+    startDate.setMinutes(startMinute);
+    endDate.setHours(endHour);
+    endDate.setMinutes(endMinute);
+
+    var finalStart = this.formatTableTime(startDate);
+    var finalEnd = this.formatTableTime(endDate);
+
+    console.log(startDate);
+    console.log(endDate);
 
     if (!this.validateHours(startDate, endDate)) {
       return;
     } else {
       var time = {
-        id: this.data.selectedID,
         start: startDate,
         end: endDate
       };

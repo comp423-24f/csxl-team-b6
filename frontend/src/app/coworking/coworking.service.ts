@@ -22,6 +22,7 @@ import {
 } from './coworking.models';
 import { ProfileService } from '../profile/profile.service';
 import { Profile } from '../models.module';
+import { TimeRange } from '../time-range';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -158,10 +159,7 @@ export class CoworkingService implements OnDestroy {
     return this.http.delete(`/api/coworking/operating_hours/${id}`);
   }
 
-  editOperatingHours(
-    id: number,
-    operatingHours: OperatingHours
-  ): Observable<any> {
+  editOperatingHours(id: number, operatingHours: TimeRange): Observable<any> {
     return this.http
       .put<OperatingHoursJSON>(
         `/api/coworking/operating_hours/${id}`,
