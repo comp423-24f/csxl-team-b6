@@ -35,15 +35,12 @@ def get_operating_hours(
 
 @api.post("", response_model=OperatingHours, tags=["Coworking"])
 def new_operating_hours(
-    operating_hours_range: TimeRange,
+    operating_hours: OperatingHours,
     subject: User = Depends(registered_user),
     operating_hours_svc: OperatingHoursService = Depends(),
 ):
     """Create new opening hours for the XL."""
-    time_range = TimeRange(
-        start=operating_hours_range.start, end=operating_hours_range.end
-    )
-    return operating_hours_svc.create(subject, time_range)
+    return operating_hours_svc.create(subject, operating_hours)
 
 
 @api.delete("/{id}", tags=["Coworking"])
@@ -60,12 +57,9 @@ def delete_operating_hours(
 @api.put("/{id}", response_model=OperatingHours, tags=["Coworking"])
 def edit_operating_hours(
     id: int,
-    operating_hours_range: TimeRange,
+    operating_hours: OperatingHours,
     subject: User = Depends(registered_user),
     operating_hours_svc: OperatingHoursService = Depends(),
 ):
     """Edit operating hours for the XL."""
-    operating_hours = operating_hours_svc.get_by_id(id)
-    operating_hours_range.start = operating_hours_range.start.astimezone(timezone.utc)
-    operating_hours_range.end = operating_hours_range.end.astimezone(timezone.utc)
-    return operating_hours_svc.update(subject, operating_hours, operating_hours_range)
+    return operating_hours_svc.update(subject, operating_hours)
