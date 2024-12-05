@@ -54,9 +54,8 @@ def delete_operating_hours(
     return operating_hours_svc.delete(subject, operating_hours)
 
 
-@api.put("/{id}", response_model=OperatingHours, tags=["Coworking"])
+@api.put("", response_model=OperatingHours, tags=["Coworking"])
 def edit_operating_hours(
-    id: int,
     operating_hours: OperatingHours,
     subject: User = Depends(registered_user),
     operating_hours_svc: OperatingHoursService = Depends(),
