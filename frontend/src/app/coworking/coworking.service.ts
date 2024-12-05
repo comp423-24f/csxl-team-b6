@@ -155,14 +155,16 @@ export class CoworkingService implements OnDestroy {
    * @param id - The ID of the operating hours to delete.
    * @returns {Observable<any>}
    */
-  deleteOperatingHours(id: number): Observable<any> {
-    return this.http.delete(`/api/coworking/operating_hours/${id}`);
+  deleteOperatingHours(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/coworking/operating_hours/${id}`);
   }
 
-  editOperatingHours(id: number, operatingHours: TimeRange): Observable<any> {
+  editOperatingHours(
+    operatingHours: OperatingHours
+  ): Observable<OperatingHours> {
     return this.http
       .put<OperatingHoursJSON>(
-        `/api/coworking/operating_hours/${id}`,
+        `/api/coworking/operating_hours/${operatingHours.id}`,
         operatingHours
       )
       .pipe(
