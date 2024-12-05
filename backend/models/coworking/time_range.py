@@ -20,7 +20,7 @@ class TimeRange(BaseModel):
     @classmethod
     def remove_timezone(cls, value: datetime):
         if type(value) == str:
-            dt = datetime.fromisoformat(value.replace("Z", "-05:00"))
+            dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
             dt = dt.astimezone(ZoneInfo("America/New_York"))
             dt = dt.replace(tzinfo=None)
             return dt
