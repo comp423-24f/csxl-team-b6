@@ -36,6 +36,7 @@ import { DialogModule } from '@angular/cdk/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { EditOperatingHoursDialog } from './widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     NewReservationPageComponent,
     DateSelector,
     OperatingHoursDialog,
+    EditOperatingHoursDialog,
     ReservationFactsWidget
   ],
   imports: [
