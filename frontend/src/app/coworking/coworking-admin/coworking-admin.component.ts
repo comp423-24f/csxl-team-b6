@@ -7,8 +7,8 @@ import { OperatingHours } from '../coworking.models';
 import { forkJoin, Observable, of } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { EditOperatingHoursDialog } from '../widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -34,16 +34,9 @@ export class CoworkingAdminComponent {
     'startTime',
     'endTime'
   ];
-  protected data = {
-    selectedID: 0,
-    startDate: '',
-    endDate: '',
-    startTime: '',
-    endTime: ''
-  };
+
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
-  @ViewChild('editDialog') dialogTemplate!: TemplateRef<any>;
 
   constructor(
     public coworkingService: CoworkingService,
@@ -52,11 +45,6 @@ export class CoworkingAdminComponent {
     protected snackBar: MatSnackBar
   ) {
     this.selection = new SelectionModel<OperatingHours>(true, []);
-  }
-
-  ngAfterViewInit() {
-    // Safe to use @ViewChild after the view has been initialized
-    console.log('Dialog Template:', this.dialogTemplate);
   }
 
   validateHours(startDate: Date, endDate: Date): boolean {
@@ -87,6 +75,7 @@ export class CoworkingAdminComponent {
   }
 
   createOperatingHours(): void {
+    console.log(this.newOperatingHours.startDate);
     const startDate = new Date(this.newOperatingHours.startDate);
     const endDate = new Date(this.newOperatingHours.endDate);
     const [startHour, startMinute] = this.newOperatingHours.startTime
@@ -150,87 +139,28 @@ export class CoworkingAdminComponent {
       });
   }
 
-  openEditWindow(): void {
-    if (this.selection.selected.length != 1) {
-      this.snackBar.open(
-        'Please select a single entry of operating hours to edit.',
-        '',
-        {
-          duration: 2000
-        }
-      );
-    } else {
-      this.data.selectedID = this.selection.selected[0].id;
-      this.data.startDate = this.selection.selected[0].start
-        .toISOString()
-        .split('T')[0];
-      this.data.endDate = this.selection.selected[0].end
-        .toISOString()
-        .split('T')[0];
-
-      this.data.startTime = this.formatTableTime(
-        this.selection.selected[0].start
-      ).split(' ')[0];
-      this.data.endTime = this.formatTableTime(
-        this.selection.selected[0].end
-      ).split(' ')[0];
-
-      of(this.data.selectedID).subscribe({
-        next: () => {
-          this.dialog.open(this.dialogTemplate, {
-            width: '400px'
-          });
-        }
-      });
-    }
-  }
-
-  editOperatingHours(): void {
-    const options: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZoneName: 'short',
-      timeZone: 'America/New_York'
-    };
-
-    var startDate = new Date(this.data.startDate);
-    var endDate = new Date(this.data.endDate);
-    const [startHour, startMinute] = this.data.startTime.split(':').map(Number);
-    const [endHour, endMinute] = this.data.endTime.split(':').map(Number);
-    startDate.setHours(startHour);
-    startDate.setMinutes(startMinute);
-    endDate.setHours(endHour);
-    endDate.setMinutes(endMinute);
-
-    var finalStart = this.formatTableTime(startDate);
-    var finalEnd = this.formatTableTime(endDate);
-
-    console.log(startDate);
-    console.log(endDate);
-
-    if (!this.validateHours(startDate, endDate)) {
-      return;
-    } else {
-      var time = {
-        start: startDate,
-        end: endDate
-      };
-      this.coworkingService
-        .editOperatingHours(this.data.selectedID, time)
-        .subscribe({
-          next: () => {
-            this.snackBar.open('Operating hours edited successfully.', '', {
-              duration: 2000
+  openEditDialog(): void {
+    const dialogRef = this.dialog.open(EditOperatingHoursDialog, {
+      width: '400px',
+      data: this.selection.selected[0]
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res) {
+        this.coworkingService.editOperatingHours(res).subscribe({
+          next: (resp) => {
+            this.snackBar.open('Operating hours edited successfully', '', {
+              duration: 3000
             });
             this.fetchOperatingHours();
           },
-          error: (error) => {
-            this.snackBar.open('Failed to edit operating hours.', '', {
-              duration: 2000
+          error: (err) => {
+            this.snackBar.open('Failed to edit operating hours', '', {
+              duration: 3000
             });
           }
         });
-    }
+      }
+    });
   }
 
   deleteOperatingHours(): void {
@@ -261,7 +191,7 @@ export class CoworkingAdminComponent {
     };
   }
 
-  //   fetch will take start and end as params from UI after we add table date picker
+  // fetch will take start and end as params from UI after we add table date picker
   fetchOperatingHours(): void {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
