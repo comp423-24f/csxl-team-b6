@@ -47,7 +47,9 @@ export class CoworkingAdminComponent {
     this.selection = new SelectionModel<OperatingHours>(true, []);
   }
 
-  validateHours(startDate: Date, endDate: Date): boolean {
+  validateHours(inputStart: Date, inputEnd: Date): boolean {
+    const startDate = new Date(inputStart);
+    const endDate = new Date(inputEnd);
     if (isNaN(startDate.getTime())) {
       this.snackBar.open('Please provide valid dates.', '', {
         duration: 2000
@@ -140,12 +142,22 @@ export class CoworkingAdminComponent {
   }
 
   openEditDialog(): void {
+    if (this.selection.selected.length !== 1) {
+      this.snackBar.open('Please select a single row to edit.', '', {
+        duration: 2000
+      });
+      return;
+    }
+
     const dialogRef = this.dialog.open(EditOperatingHoursDialog, {
       width: '400px',
       data: this.selection.selected[0]
     });
     dialogRef.afterClosed().subscribe((res) => {
       if (res) {
+        if (!this.validateHours(res.start, res.end)) {
+          return;
+        }
         this.coworkingService.editOperatingHours(res).subscribe({
           next: (resp) => {
             this.snackBar.open('Operating hours edited successfully', '', {
