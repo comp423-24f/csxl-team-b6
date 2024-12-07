@@ -1,0 +1,10 @@
+.edit-pickers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#start-time-picker {
+  padding-top: 15px;
+}

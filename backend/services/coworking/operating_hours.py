@@ -114,19 +114,13 @@ class OperatingHoursService:
         )
         self._session.delete(operating_hours_entity)
         self._session.commit()
-        
-    def update(
-        self,
-        subject: User,
-        operating_hours: OperatingHours,
-        time_range: TimeRange,
-    ) -> OperatingHours:
+
+    def update(self, subject: User, operating_hours: OperatingHours) -> OperatingHours:
         """Update an existing Operating Hours entry.
 
         Args:
             subject (User): The user updating the Operating Hours entry.
             operating_hours (OperatingHours): The existing operating hours to update.
-            time_range (TimeRange): The new time range to update to.
 
         Returns:
             OperatingHours: The updated Operating Hours object.
@@ -137,23 +131,21 @@ class OperatingHoursService:
             f"coworking/operating_hours/{operating_hours.id}",
         )
 
-        # Check for conflicts excluding the current operating hours
-        conflicts = self.schedule(time_range)
+        conflicts = self.schedule(operating_hours)
         conflicts = [oh for oh in conflicts if oh.id != operating_hours.id]
         if conflicts:
             raise OperatingHoursCannotOverlapException(
-                f"Conflicts in the range of {str(time_range)}"
+                f"Conflicts in the range of {str(operating_hours)}"
             )
 
-        # Update the entity
         operating_hours_entity = self._session.get(
             OperatingHoursEntity, operating_hours.id
         )
         if not operating_hours_entity:
             raise ResourceNotFoundException()
 
-        operating_hours_entity.start = time_range.start
-        operating_hours_entity.end = time_range.end
+        operating_hours_entity.start = operating_hours.start
+        operating_hours_entity.end = operating_hours.end
         self._session.commit()
 
         return operating_hours_entity.to_model()
