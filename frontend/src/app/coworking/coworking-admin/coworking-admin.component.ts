@@ -163,11 +163,13 @@ export class CoworkingAdminComponent {
           });
           this.resetNewOperatingHours();
           this.fetchOperatingHours();
+          this.fetchWelcomeOverview();
         }
       })
       .add(() => {
         this.resetNewOperatingHours();
         this.fetchOperatingHours();
+        this.fetchWelcomeOverview();
       });
   }
 
@@ -215,6 +217,7 @@ export class CoworkingAdminComponent {
           duration: 2000
         });
         this.fetchOperatingHours();
+        this.fetchWelcomeOverview();
       },
       error: (error) => {
         this.snackBar.open('Failed to delete operating hour.', '', {
