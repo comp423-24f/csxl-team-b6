@@ -55,6 +55,21 @@
   </form>
 </mat-pane>
 
+<div class="right-column">
+  <mat-card-header>
+    <mat-card-title>The XL (SN156) is...</mat-card-title>
+  </mat-card-header>
+  @if (openOperatingHours()) {
+  <coworking-operating-hours-panel
+    [operatingHours]="welcomeOverview()!.operating_hours"
+    [openOperatingHours]="openOperatingHours()" />
+
+  } @else {
+  <coworking-operating-hours-panel
+    [operatingHours]="welcomeOverview()!.operating_hours" />
+  }
+</div>
+
 <mat-pane>
   <mat-card-header id="header-container">
     <mat-card-title>Existing Hours</mat-card-title>
