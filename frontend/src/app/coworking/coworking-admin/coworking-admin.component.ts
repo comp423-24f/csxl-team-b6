@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { permissionGuard } from 'src/app/permission.guard';
 import { CoworkingService } from '../coworking.service';
@@ -9,6 +9,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { EditOperatingHoursDialog } from '../widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -38,6 +40,11 @@ export class CoworkingAdminComponent {
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
 
+  protected scheduledCount = 0;
+  private future = true;
+
+  @ViewChild(MatPaginator) protected paginator!: MatPaginator;
+
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
@@ -45,6 +52,10 @@ export class CoworkingAdminComponent {
     protected snackBar: MatSnackBar
   ) {
     this.selection = new SelectionModel<OperatingHours>(true, []);
+  }
+
+  ngAfterViewInit(): void {
+    this.fetchOperatingHours();
   }
 
   validateHours(inputStart: Date, inputEnd: Date): boolean {
@@ -77,7 +88,6 @@ export class CoworkingAdminComponent {
   }
 
   createOperatingHours(): void {
-    console.log(this.newOperatingHours.startDate);
     const startDate = new Date(this.newOperatingHours.startDate);
     const endDate = new Date(this.newOperatingHours.endDate);
     const [startHour, startMinute] = this.newOperatingHours.startTime
@@ -131,13 +141,10 @@ export class CoworkingAdminComponent {
           this.snackBar.open('An error occurred while adding hours.', '', {
             duration: 2000
           });
-          this.resetNewOperatingHours();
-          this.fetchOperatingHours();
         }
       })
       .add(() => {
-        this.resetNewOperatingHours();
-        this.fetchOperatingHours();
+        this.modifyTeardown();
       });
   }
 
@@ -148,30 +155,31 @@ export class CoworkingAdminComponent {
       });
       return;
     }
-
     const dialogRef = this.dialog.open(EditOperatingHoursDialog, {
       width: '400px',
       data: this.selection.selected[0]
     });
     dialogRef.afterClosed().subscribe((res) => {
-      if (res) {
-        if (!this.validateHours(res.start, res.end)) {
-          return;
-        }
-        this.coworkingService.editOperatingHours(res).subscribe({
+      if (!res || !this.validateHours(res.start, res.end)) {
+        return;
+      }
+      this.coworkingService
+        .editOperatingHours(res)
+        .subscribe({
           next: (resp) => {
             this.snackBar.open('Operating hours edited successfully', '', {
               duration: 3000
             });
-            this.fetchOperatingHours();
           },
           error: (err) => {
             this.snackBar.open('Failed to edit operating hours', '', {
               duration: 3000
             });
           }
+        })
+        .add(() => {
+          this.modifyTeardown();
         });
-      }
     });
   }
 
@@ -179,19 +187,29 @@ export class CoworkingAdminComponent {
     const ohObservables = this.selection.selected.map((row) =>
       this.coworkingService.deleteOperatingHours(row.id)
     );
-    forkJoin(ohObservables).subscribe({
-      next: () => {
-        this.snackBar.open('Operating hours deleted successfully.', '', {
-          duration: 2000
-        });
-        this.fetchOperatingHours();
-      },
-      error: (error) => {
-        this.snackBar.open('Failed to delete operating hour.', '', {
-          duration: 2000
-        });
-      }
-    });
+    forkJoin(ohObservables)
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Operating hours deleted successfully.', '', {
+            duration: 2000
+          });
+          this.fetchOperatingHours();
+        },
+        error: (error) => {
+          this.snackBar.open('Failed to delete operating hour.', '', {
+            duration: 2000
+          });
+        }
+      })
+      .add(() => {
+        this.modifyTeardown();
+      });
+  }
+
+  modifyTeardown(): void {
+    this.resetNewOperatingHours();
+    this.fetchOperatingHours();
+    this.paginator.firstPage();
   }
 
   resetNewOperatingHours(): void {
@@ -203,19 +221,26 @@ export class CoworkingAdminComponent {
     };
   }
 
-  // fetch will take start and end as params from UI after we add table date picker
   fetchOperatingHours(): void {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
-    const end = new Date(start);
-    // jsut going to default to 8 weeks for now
-    end.setDate(start.getDate() + 7 * 8);
-    end.setHours(23, 59, 59, 999);
+
+    this.coworkingService.countHours(start, this.future).subscribe((count) => {
+      this.scheduledCount = count;
+    });
+
+    this.coworkingService
+      .getPaginatedOperatingHours(
+        start,
+        this.paginator.pageIndex,
+        this.paginator.pageSize,
+        this.future
+      )
+      .subscribe((data) => {
+        this.dataSource.data = data;
+      });
 
     this.selection.clear();
-    this.coworkingService.listOperatingHours(start, end).subscribe((data) => {
-      this.dataSource.data = data;
-    });
   }
 
   formatTableTime(date: Date): string {
@@ -240,7 +265,14 @@ export class CoworkingAdminComponent {
     }
   }
 
-  ngOnInit(): void {
+  onPageEvent(event: PageEvent): void {
     this.fetchOperatingHours();
+  }
+
+  onTableTabChange(event: MatTabChangeEvent): void {
+    this.future = event.index === 0;
+    this.fetchOperatingHours();
+    this.paginator.firstPage();
+    console.log('future: ', this.future);
   }
 }
