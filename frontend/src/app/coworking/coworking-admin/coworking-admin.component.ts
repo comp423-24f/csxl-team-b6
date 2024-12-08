@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EditOperatingHoursDialog } from '../widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
 import { WritableSignal, signal, computed } from '@angular/core';
 import { WelcomeService } from 'src/app/welcome/welcome.service';
+import { WelcomeOverview } from 'src/app/welcome/welcome.model';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -39,13 +40,8 @@ export class CoworkingAdminComponent {
 
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
-
-  protected welcomeOverview: WritableSignal<
-    | {
-        operating_hours: OperatingHours[];
-      }
-    | undefined
-  > = signal(undefined);
+  welcomeOverview: WritableSignal<WelcomeOverview | undefined> =
+    signal(undefined);
 
   openOperatingHours = computed(() => {
     const now = new Date();
@@ -70,10 +66,7 @@ export class CoworkingAdminComponent {
 
   ngOnInit(): void {
     this.fetchOperatingHours();
-
-    this.welcomeService.getWelcomeStatus().subscribe((data) => {
-      this.welcomeOverview.set(data);
-    });
+    this.fetchWelcomeOverview();
   }
 
   validateHours(inputStart: Date, inputEnd: Date): boolean {
