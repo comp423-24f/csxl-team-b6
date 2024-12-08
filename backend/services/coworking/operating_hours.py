@@ -173,7 +173,7 @@ class OperatingHoursService:
             query = query.filter(OperatingHoursEntity.start < start)
             query = query.order_by(OperatingHoursEntity.start.desc())
 
-        row_offset = (page - 1) * per_page
+        row_offset = page * per_page
         query = query.offset(row_offset).limit(per_page)
 
         result = [entity.to_model() for entity in query.all()]
