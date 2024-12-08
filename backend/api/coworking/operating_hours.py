@@ -62,3 +62,25 @@ def edit_operating_hours(
 ):
     """Edit operating hours for the XL."""
     return operating_hours_svc.update(subject, operating_hours)
+
+
+@api.get("/page", response_model=Sequence[OperatingHours], tags=["Coworking"])
+def get_operating_hours_page(
+    start_date: datetime,
+    page: int,
+    page_size: int = 10,
+    future: bool = True,
+    operating_hours_svc: OperatingHoursService = Depends(),
+):
+    """List operating hours with pagination."""
+    return operating_hours_svc.paginated_schedule(start_date, page, page_size, future)
+
+
+@api.get("/count", response_model=int, tags=["Coworking"])
+def get_operating_hours_count(
+    start_date: datetime,
+    future: bool,
+    operating_hours_svc: OperatingHoursService = Depends(),
+):
+    """Count the number of operating hours."""
+    return operating_hours_svc.count(start_date, future)
