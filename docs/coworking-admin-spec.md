@@ -1,72 +1,71 @@
-# Technical Specification Document - SP01
+# Technical Specification Document
 
-## I. Descriptions
+## Authors
 
-Our feature is purely a front-end concern. There was no modification to the existing API routes. The changes we made enhance the UI for interacting with the same operating hours API routes.
+- [Krish Patel](https://github.com/krishpatelunc)
+- [Milan Dutta](https://github.com/duttamilan1)
+- [Vishaan Saxena](https://github.com/VSaxena111)
+- [Kensho Pilkey](https://github.com/kensho-pilkey)
 
-### API Route: `/api/coworking/operating_hours`
+## Feature Overview
 
-```json
-[
-  {
-    "id": 1,
-    "start": "2024-11-20T10:00:00",
-    "end": "2024-11-20T20:00:00"
-  },
-  {
-    "id": 2,
-    "start": "2024-11-21T10:00:00",
-    "end": "2024-11-21T20:00:00"
-  }
-]
-```
+This feature provides a management interface for the CXSL’s coworking space operating hours. Admins can add, edit, and delete future hours, as well as view and page through both upcoming and historical hours.
 
-#### Query Parameters:
+## API and Data Representations
 
-- `start` (optional): Start date and time
-- `end` (optional): End date and time
+### Relevant API Routes
 
-#### Usage in the Feature:
+All routes below are defined in `backend/api/coworking/operating_hours.py` and return JSON data.  
+They rely on database functions in `backend/services/coworking/operating_hours.py`.
 
-In our feature, this endpoint is used to fetch the operating hours from the db to show them in the admin panel. The query parameters `start` and `end` filter the operating hours within a specific date range.
+| Route                                  | Method | Params                                      | Description                                    |
+| -------------------------------------- | ------ | ------------------------------------------- | ---------------------------------------------- |
+| `/api/coworking/operating_hours`       | GET    | `start`, `end` (optional)                   | Fetches hours in a date range.                 |
+| `/api/coworking/operating_hours`       | POST   | OperatingHours JSON body                    | Creates new hours, fails if conflicting.       |
+| `/api/coworking/operating_hours`       | PUT    | OperatingHours JSON body                    | Edits existing hours, fails if conflicting.    |
+| `/api/coworking/operating_hours/{id}`  | DELETE | Path param `id`                             | Deletes a future operating hours entry.        |
+| `/api/coworking/operating_hours/page`  | GET    | `start_date`, `page`, `page_size`, `future` | Fetch page of future or historical hours.      |
+| `/api/coworking/operating_hours/count` | GET    | `start_date`, `future`                      | Returns count of future or historical entries. |
 
-## II. Model Representation
+### Data Model
 
-We are relying on the existing entity format for open hours:
-
-- **id** - Unique identifier for the set of hours.
-- **start** - Coworking open time, stored as a `dateTime`.
-- **end** - Coworking close time, stored as `dateTime`.
-
-This entity has all the necessary information to view open hours.
+The `OperatingHours` model is the same:
 
 ```json
 {
   "id": 1,
-  "start": "2024-11-21T10:00:00",
-  "end": "2024-11-21T20:00:00"
+  "start": "2024-12-08T10:00:00",
+  "end": "2024-12-08T20:00:00"
 }
 ```
 
-The database schema for operating hours includes:
+**Schema (`operating_hours` table):**
 
-- `id` (Primary Key)
-- `start` (DateTime)
-- `end` (DateTime)
+- **`id`**: `int`, Primary Key
+- **`start`**: `DateTime`, indexed
+- **`end`**: `DateTime`, indexed
 
-## III. Design Decisions
+## Design Choices
 
-### UX
+**UX Choice:**  
+We chose a date range selector with start and end time inputs instead of chips for selecting days of the week. The old approach had logical issues and it wasn’t clear how to handle conflicts between the date range and day selection. The trade-off is that our current approach takes more steps when scheduling recurring days like Monday to Friday for a month.
 
-We chose to use a start and end time dropdown list over having chips for each day of the week because the old design has logical issues when selecting a date range. This new design ensures users select a valid date range and seperate time interval, even if it may take longer to input into then the chips.
+**Technical Choice:**  
+We decided to use server-side pagination and counting endpoints instead of fetching all data and filtering it client-side. While fetching everything at once would simplify database queries and API parameters, it would slow down table loading as the data grows. Handling paging server-side scales better, especially since most admins won’t need to access all the data very often.
 
-### Technical
+## Development Concerns
 
-We decided to fetch operating hours once during component creation and when new hours are added. This reduces the number of API calls versus fetching periodically. It's probably rare that multiple people add hours at the same time, so we think the trade-off is worth it.
+Files you should look at:
 
-## IV. Development Concerns
+**Backend:**
 
-- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.ts`: Contains the logic for parsing user input into operating hours and calls injected coworking service for fetching/adding operating hours.
-- `frontend/src/app/coworking/coworking.service.ts`: Service file uses Angular HTTP client to interact with the backend API, fetching and adding open hours.
-- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.html`: Defines the UI structure for the admin panel.
-- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.css`: Defines a few custom styles we added.
+- `backend/api/coworking/operating_hours.py`: Defines FastAPI endpoints for CRUD on operating hours.
+- `backend/services/coworking/operating_hours.py`: DB service functions for CRUD (reading based on page or time range, create, edit, delete, count).
+- `backend/test/services/coworking/operating_hours_test.py`: Unit tests for DB service functions
+
+**Frontend:**
+
+- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.ts`: Main admin panel logic, talks to the `CoworkingService` to get API data.
+- `frontend/src/app/coworking/coworking-admin/coworking-admin.component.html`: Layout for admin panel with date/time pickers, table, and add/edit/delete controls.
+- `frontend/src/app/coworking/coworking.service.ts`: Handles making API requests for component to fetch, create, edit, and delete hours.
+- `frontend/src/app/coworking/widgets/edit-operating-hours-dialog`: Dialog widget for editing a single hours row.
