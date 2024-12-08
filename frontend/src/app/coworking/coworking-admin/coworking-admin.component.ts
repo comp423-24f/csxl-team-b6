@@ -304,6 +304,5 @@ export class CoworkingAdminComponent {
     this.future = event.index === 0;
     this.fetchOperatingHours();
     this.paginator.firstPage();
-    console.log('future: ', this.future);
   }
 }

@@ -211,7 +211,6 @@ def test_paginated_schedule_historical(
     future = False
     page = 0
     result = operating_hours_svc.paginated_schedule(start_day, page, page_size, future)
-    print(result)
     assert len(result) == 1
     assert result[0].id == operating_hours_data.today.id
 
