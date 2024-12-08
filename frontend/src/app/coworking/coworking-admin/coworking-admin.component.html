@@ -79,7 +79,7 @@
 
 <mat-card id="table-pane" appearance="outlined">
   <mat-card-header id="header-container">
-    <mat-card-title>Manage Hours</mat-card-title>
+    <mat-card-title>Manage Schedule</mat-card-title>
     <div id="header-buttons">
       <button mat-icon-button (click)="openEditDialog()">
         <mat-icon>edit</mat-icon>
@@ -91,10 +91,10 @@
   </mat-card-header>
   <mat-card-content>
     <mat-tab-group (selectedTabChange)="onTableTabChange($event)">
-      <mat-tab label="Future Schedule"></mat-tab>
-      <mat-tab label="Past Schedule"></mat-tab>
+      <mat-tab label="Current & Future Hours"></mat-tab>
+      <mat-tab label="Historical Hours"></mat-tab>
     </mat-tab-group>
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox
