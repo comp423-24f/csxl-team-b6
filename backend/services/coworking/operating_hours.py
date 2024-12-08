@@ -154,10 +154,10 @@ class OperatingHoursService:
     def paginated_schedule(
         self, start: datetime, page: int, per_page: int, future: bool
     ) -> list[OperatingHours]:
-        """Returns operating hours of the XL page by page for admin panel table.
+        """Fetches a page of operating hours of operating hours for the admin panel table.
 
         Args:
-            start (datetime): The start date to base paging on.
+            start (datetime): The start date where paging begins.
             page (int): The page number to get.
             per_page (int): The number of rows per page.
             future (bool): Whether to fetch future or past operating hours.
@@ -179,14 +179,14 @@ class OperatingHoursService:
         return [entity.to_model() for entity in query.all()]
 
     def count(self, start: datetime, future: bool) -> int:
-        """Returns the total count of scheduled hours before and after date.
+        """Counts scheduled operating hours relative to start date.
 
         Args:
             start (datetime): The date counting is based on.
             future (bool): Whether to count future or past scheduled hours.
 
         Returns:
-            int: The future or past scheduled count.
+            int: The count of scheduled hours.
         """
         query = self._session.query(OperatingHoursEntity)
         if future:
