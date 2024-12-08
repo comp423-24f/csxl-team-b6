@@ -9,6 +9,9 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { EditOperatingHoursDialog } from '../widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
+import { WritableSignal, signal, computed } from '@angular/core';
+import { WelcomeService } from 'src/app/welcome/welcome.service';
+import { WelcomeOverview } from 'src/app/welcome/welcome.model';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 
@@ -39,6 +42,19 @@ export class CoworkingAdminComponent {
 
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
+  welcomeOverview: WritableSignal<WelcomeOverview | undefined> =
+    signal(undefined);
+
+  openOperatingHours = computed(() => {
+    const now = new Date();
+    const overview = this.welcomeOverview();
+    if (!overview || !overview.operating_hours) {
+      return undefined;
+    }
+    return overview.operating_hours.find(
+      (hours: OperatingHours) => hours.start <= now && hours.end >= now
+    );
+  });
 
   protected scheduledCount = 0;
   private future = true;
@@ -49,18 +65,21 @@ export class CoworkingAdminComponent {
     public coworkingService: CoworkingService,
     private router: Router,
     private dialog: MatDialog,
-    protected snackBar: MatSnackBar
+    protected snackBar: MatSnackBar,
+    private welcomeService: WelcomeService
   ) {
     this.selection = new SelectionModel<OperatingHours>(true, []);
   }
 
   ngAfterViewInit(): void {
     this.fetchOperatingHours();
+    this.fetchWelcomeOverview();
   }
 
   validateHours(inputStart: Date, inputEnd: Date): boolean {
     const startDate = new Date(inputStart);
     const endDate = new Date(inputEnd);
+
     if (isNaN(startDate.getTime())) {
       this.snackBar.open('Please provide valid dates.', '', {
         duration: 2000
@@ -193,7 +212,6 @@ export class CoworkingAdminComponent {
           this.snackBar.open('Operating hours deleted successfully.', '', {
             duration: 2000
           });
-          this.fetchOperatingHours();
         },
         error: (error) => {
           this.snackBar.open('Failed to delete operating hour.', '', {
@@ -210,6 +228,7 @@ export class CoworkingAdminComponent {
     this.resetNewOperatingHours();
     this.fetchOperatingHours();
     this.paginator.firstPage();
+    this.fetchWelcomeOverview();
   }
 
   resetNewOperatingHours(): void {
@@ -241,6 +260,12 @@ export class CoworkingAdminComponent {
       });
 
     this.selection.clear();
+  }
+
+  fetchWelcomeOverview(): void {
+    this.welcomeService.getWelcomeStatus().subscribe((data) => {
+      this.welcomeOverview.set(data);
+    });
   }
 
   formatTableTime(date: Date): string {

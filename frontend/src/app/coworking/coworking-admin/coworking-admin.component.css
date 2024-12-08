@@ -1,3 +1,25 @@
+#top-flex-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#add-hours-container,
+#existing-hours-container {
+  flex: 1;
+}
+
+@media only screen and (max-width: 1000px) {
+  #top-flex-container {
+    flex-direction: column;
+  }
+
+  #add-hours-container,
+  #existing-hours-container {
+    width: 100%;
+  }
+}
+
 .date-time-pickers {
   padding: 10px;
 }
@@ -14,7 +36,8 @@
 #add-hours-submit-button-container {
   display: flex;
   justify-content: flex-end;
-  padding: 10px;
+  padding-bottom: 10px;
+  padding-right: 10px;
 }
 
 #header-container {
