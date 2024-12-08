@@ -116,3 +116,57 @@ def test_delete_permissions(operating_hours_svc: OperatingHoursService):
         "coworking.operating_hours.delete",
         f"coworking/operating_hours/{operating_hours_data.future.id}",
     )
+
+
+def test_update(operating_hours_svc: OperatingHoursService, time: dict[str, datetime]):
+    """Successfully update an Operating Hours entity."""
+    existing = operating_hours_svc.get_by_id(operating_hours_data.today.id)
+    assert existing is not None
+
+    new_time_range = TimeRange(
+        start=time[TOMORROW] + timedelta(days=1, hours=10),
+        end=time[TOMORROW] + timedelta(days=1, hours=12),
+    )
+
+    existing.start = new_time_range.start
+    existing.end = new_time_range.end
+
+    updated = operating_hours_svc.update(user_data.root, existing)
+
+    assert updated.start == new_time_range.start
+    assert updated.end == new_time_range.end
+
+
+def test_update_nonexistent_operating_hours(operating_hours_svc: OperatingHoursService):
+    """Attempt to update a non-existent Operating Hours to trigger ResourceNotFoundException."""
+    far_future_start = datetime(2100, 1, 1, 0, 0, 0)
+    far_future_end = datetime(2100, 1, 1, 2, 0, 0)
+
+    nonexistent = OperatingHours(
+        id=9999, #Probably not in DB
+        start=far_future_start,
+        end=far_future_end,
+    )
+
+    with pytest.raises(ResourceNotFoundException):
+        operating_hours_svc.update(user_data.root, nonexistent)
+
+
+def test_update_conflicting_operating_hours(
+    operating_hours_svc: OperatingHoursService, time: dict[str, datetime]
+):
+    """Attempt to update Operating Hours that overlap with an existing record to trigger OperatingHoursCannotOverlapException."""
+    existing = operating_hours_svc.get_by_id(operating_hours_data.today.id)
+    assert existing is not None
+
+    overlapping = OperatingHours(
+        start=time[TOMORROW] + timedelta(hours=11),
+        end=time[TOMORROW] + timedelta(hours=13),
+    )
+    created = operating_hours_svc.create(user_data.root, overlapping)
+
+    existing.start = overlapping.start
+    existing.end = overlapping.end
+
+    with pytest.raises(OperatingHoursCannotOverlapException):
+        operating_hours_svc.update(user_data.root, existing)
