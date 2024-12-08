@@ -176,10 +176,7 @@ class OperatingHoursService:
         row_offset = page * per_page
         query = query.offset(row_offset).limit(per_page)
 
-        result = [entity.to_model() for entity in query.all()]
-        if not future:
-            result = result[::-1]
-        return result
+        return [entity.to_model() for entity in query.all()]
 
     def count(self, start: datetime, future: bool) -> int:
         """Returns the total count of scheduled hours before and after date.
