@@ -9,6 +9,9 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { EditOperatingHoursDialog } from '../widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
+import { WritableSignal, signal, computed } from '@angular/core';
+import { WelcomeService } from 'src/app/welcome/welcome.service';
+import { WelcomeOverview } from 'src/app/welcome/welcome.model';
 
 @Component({
   selector: 'app-coworking-admin',
@@ -37,19 +40,39 @@ export class CoworkingAdminComponent {
 
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
+  welcomeOverview: WritableSignal<WelcomeOverview | undefined> =
+    signal(undefined);
+
+  openOperatingHours = computed(() => {
+    const now = new Date();
+    const overview = this.welcomeOverview();
+    if (!overview || !overview.operating_hours) {
+      return undefined;
+    }
+    return overview.operating_hours.find(
+      (hours: OperatingHours) => hours.start <= now && hours.end >= now
+    );
+  });
 
   constructor(
     public coworkingService: CoworkingService,
     private router: Router,
     private dialog: MatDialog,
-    protected snackBar: MatSnackBar
+    protected snackBar: MatSnackBar,
+    private welcomeService: WelcomeService
   ) {
     this.selection = new SelectionModel<OperatingHours>(true, []);
+  }
+
+  ngOnInit(): void {
+    this.fetchOperatingHours();
+    this.fetchWelcomeOverview();
   }
 
   validateHours(inputStart: Date, inputEnd: Date): boolean {
     const startDate = new Date(inputStart);
     const endDate = new Date(inputEnd);
+
     if (isNaN(startDate.getTime())) {
       this.snackBar.open('Please provide valid dates.', '', {
         duration: 2000
@@ -133,11 +156,13 @@ export class CoworkingAdminComponent {
           });
           this.resetNewOperatingHours();
           this.fetchOperatingHours();
+          this.fetchWelcomeOverview();
         }
       })
       .add(() => {
         this.resetNewOperatingHours();
         this.fetchOperatingHours();
+        this.fetchWelcomeOverview();
       });
   }
 
@@ -185,6 +210,7 @@ export class CoworkingAdminComponent {
           duration: 2000
         });
         this.fetchOperatingHours();
+        this.fetchWelcomeOverview();
       },
       error: (error) => {
         this.snackBar.open('Failed to delete operating hour.', '', {
@@ -218,6 +244,12 @@ export class CoworkingAdminComponent {
     });
   }
 
+  fetchWelcomeOverview(): void {
+    this.welcomeService.getWelcomeStatus().subscribe((data) => {
+      this.welcomeOverview.set(data);
+    });
+  }
+
   formatTableTime(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
@@ -238,9 +270,5 @@ export class CoworkingAdminComponent {
     } else {
       this.dataSource.data.forEach((row) => this.selection.select(row));
     }
-  }
-
-  ngOnInit(): void {
-    this.fetchOperatingHours();
   }
 }

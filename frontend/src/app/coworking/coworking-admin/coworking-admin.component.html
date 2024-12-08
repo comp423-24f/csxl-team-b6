@@ -1,73 +1,96 @@
-<mat-pane class="add-hours-box">
-  <mat-card-header class="card-header">
-    <mat-card-title>Add Hours</mat-card-title>
-  </mat-card-header>
-  <mat-divider></mat-divider>
+<div class="container">
+  <div class="left-column">
+    <mat-pane class="add-hours-box">
+      <mat-card-header class="card-header">
+        <mat-card-title>Add Hours</mat-card-title>
+      </mat-card-header>
+      <mat-divider></mat-divider>
 
-  <form (ngSubmit)="createOperatingHours()">
-    <mat-form-field appearance="outline" class="date-time-pickers">
-      <mat-label>Enter a date range</mat-label>
-      <mat-date-range-input [rangePicker]="picker">
-        <input
-          matStartDate
-          [(ngModel)]="newOperatingHours.startDate"
-          name="startDate"
-          placeholder="Start date"
-          required />
-        <input
-          matEndDate
-          [(ngModel)]="newOperatingHours.endDate"
-          name="endDate"
-          placeholder="End date"
-          required />
-      </mat-date-range-input>
-      <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-    </mat-form-field>
+      <form (ngSubmit)="createOperatingHours()">
+        <mat-form-field appearance="outline" class="date-time-pickers">
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              [(ngModel)]="newOperatingHours.startDate"
+              name="startDate"
+              placeholder="Start date"
+              required />
+            <input
+              matEndDate
+              [(ngModel)]="newOperatingHours.endDate"
+              name="endDate"
+              placeholder="End date"
+              required />
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
 
-    <div id="time-picker-containers">
-      <mat-form-field appearance="outline" class="date-time-pickers">
-        <mat-label>Start Time</mat-label>
-        <input
-          matInput
-          type="time"
-          [(ngModel)]="newOperatingHours.startTime"
-          name="startTime"
-          required />
-      </mat-form-field>
+        <div id="time-picker-containers">
+          <mat-form-field appearance="outline" class="date-time-pickers">
+            <mat-label>Start Time</mat-label>
+            <input
+              matInput
+              type="time"
+              [(ngModel)]="newOperatingHours.startTime"
+              name="startTime"
+              required />
+          </mat-form-field>
 
-      <mat-form-field appearance="outline" class="date-time-pickers">
-        <mat-label>End Time</mat-label>
-        <input
-          matInput
-          type="time"
-          [(ngModel)]="newOperatingHours.endTime"
-          name="endTime"
-          required />
-      </mat-form-field>
-    </div>
-    <div id="add-hours-submit-button-container">
-      <button mat-flat-button class="primary-button" type="submit">
-        Add Operating Hours
-      </button>
-    </div>
-  </form>
-</mat-pane>
+          <mat-form-field appearance="outline" class="date-time-pickers">
+            <mat-label>End Time</mat-label>
+            <input
+              matInput
+              type="time"
+              [(ngModel)]="newOperatingHours.endTime"
+              name="endTime"
+              required />
+          </mat-form-field>
+        </div>
+        <div id="add-hours-submit-button-container">
+          <button mat-flat-button class="primary-button" type="submit">
+            Add Operating Hours
+          </button>
+        </div>
+      </form>
+    </mat-pane>
 
-<mat-pane>
-  <mat-card-header id="header-container">
-    <mat-card-title>Existing Hours</mat-card-title>
-    <div id="header-buttons">
-      <button mat-icon-button (click)="openEditDialog()">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button (click)="deleteOperatingHours()">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </div>
-  </mat-card-header>
-</mat-pane>
+    <mat-pane>
+      <mat-card-header id="header-container">
+        <mat-card-title>Existing Hours</mat-card-title>
+        <div id="header-buttons">
+          <button mat-icon-button (click)="openEditDialog()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="deleteOperatingHours()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+    </mat-pane>
+  </div>
+
+  <div class="right-pane">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>The XL (SN156) is...</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (openOperatingHours()) {
+        <coworking-operating-hours-panel
+          [operatingHours]="welcomeOverview()!.operating_hours"
+          [openOperatingHours]="openOperatingHours()" />
+        } @else {
+        <coworking-operating-hours-panel
+          [operatingHours]="welcomeOverview()!.operating_hours" />
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
 <mat-card-content>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="select">
