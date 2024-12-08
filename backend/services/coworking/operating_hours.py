@@ -2,6 +2,7 @@
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from datetime import datetime
 from .exceptions import OperatingHoursCannotOverlapException
 from ..exceptions import ResourceNotFoundException
 from ..permission import PermissionService
@@ -149,3 +150,48 @@ class OperatingHoursService:
         self._session.commit()
 
         return operating_hours_entity.to_model()
+
+    def paginated_schedule(
+        self, start: datetime, page: int, per_page: int, future: bool
+    ) -> list[OperatingHours]:
+        """Fetches a page of operating hours of operating hours for the admin panel table.
+
+        Args:
+            start (datetime): The start date where paging begins.
+            page (int): The page number to get.
+            per_page (int): The number of rows per page.
+            future (bool): Whether to fetch future or past operating hours.
+
+        Returns:
+            list[OperatingHours]: All operating hours for the requested page.
+        """
+        query = self._session.query(OperatingHoursEntity)
+        if future:
+            query = query.filter(OperatingHoursEntity.start >= start)
+            query = query.order_by(OperatingHoursEntity.start.asc())
+        else:
+            query = query.filter(OperatingHoursEntity.start < start)
+            query = query.order_by(OperatingHoursEntity.start.desc())
+
+        row_offset = page * per_page
+        query = query.offset(row_offset).limit(per_page)
+
+        return [entity.to_model() for entity in query.all()]
+
+    def count(self, start: datetime, future: bool) -> int:
+        """Counts scheduled operating hours relative to start date.
+
+        Args:
+            start (datetime): The date counting is based on.
+            future (bool): Whether to count future or past scheduled hours.
+
+        Returns:
+            int: The count of scheduled hours.
+        """
+        query = self._session.query(OperatingHoursEntity)
+        if future:
+            query = query.filter(OperatingHoursEntity.start >= start)
+        else:
+            query = query.filter(OperatingHoursEntity.start < start)
+
+        return query.count()

@@ -37,6 +37,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { EditOperatingHoursDialog } from './widgets/edit-operating-hours-dialog/edit-operating-hours-dialog.widget';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -85,7 +86,8 @@ import { EditOperatingHoursDialog } from './widgets/edit-operating-hours-dialog/
     MatTabsModule,
     FormsModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatPaginatorModule
   ]
 })
 export class CoworkingModule {}

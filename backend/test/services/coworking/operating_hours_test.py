@@ -143,7 +143,7 @@ def test_update_nonexistent_operating_hours(operating_hours_svc: OperatingHoursS
     far_future_end = datetime(2100, 1, 1, 2, 0, 0)
 
     nonexistent = OperatingHours(
-        id=9999, #Probably not in DB
+        id=9999,  # Probably not in DB
         start=far_future_start,
         end=far_future_end,
     )
@@ -170,3 +170,67 @@ def test_update_conflicting_operating_hours(
 
     with pytest.raises(OperatingHoursCannotOverlapException):
         operating_hours_svc.update(user_data.root, existing)
+
+
+def test_paginated_schedule_future_small_page(
+    operating_hours_svc: OperatingHoursService, time: dict[str, datetime]
+):
+    """Test fetching future paginated_schedule with a small page size"""
+    start_day = time[NOW].replace(hour=0, minute=0, second=0, microsecond=0)
+    page_size = 2
+    future = True
+    page = 0
+    result = operating_hours_svc.paginated_schedule(start_day, page, page_size, future)
+    assert len(result) == 2
+    assert result[0].id == operating_hours_data.today.id
+    assert result[1].id == operating_hours_data.tomorrow.id
+
+
+def test_paginated_schedule_future(
+    operating_hours_svc: OperatingHoursService, time: dict[str, datetime]
+):
+    """Test fetching future paginated_schedule with default page size"""
+    start_day = time[NOW].replace(hour=0, minute=0, second=0, microsecond=0)
+    page_size = 10
+    future = True
+    page = 0
+    result = operating_hours_svc.paginated_schedule(start_day, page, page_size, future)
+    assert len(result) == 4
+    assert result[0].id == operating_hours_data.today.id
+    assert result[1].id == operating_hours_data.tomorrow.id
+    assert result[2].id == operating_hours_data.future.id
+    assert result[3].id == operating_hours_data.three_days_from_today.id
+
+
+def test_paginated_schedule_historical(
+    operating_hours_svc: OperatingHoursService, time: dict[str, datetime]
+):
+    """Test fetching historical paginated_schedule"""
+    start_day = time[TOMORROW].replace(hour=0, minute=0, second=0, microsecond=0)
+    page_size = 10
+    future = False
+    page = 0
+    result = operating_hours_svc.paginated_schedule(start_day, page, page_size, future)
+    print(result)
+    assert len(result) == 1
+    assert result[0].id == operating_hours_data.today.id
+
+
+def test_count_future(
+    operating_hours_svc: OperatingHoursService, time: dict[str, datetime]
+):
+    """Test counting future Operating Hours"""
+    start_day = time[NOW].replace(hour=0, minute=0, second=0, microsecond=0)
+    future = True
+    result = operating_hours_svc.count(start_day, future)
+    assert result == 4
+
+
+def test_count_historical(
+    operating_hours_svc: OperatingHoursService, time: dict[str, datetime]
+):
+    """Test counting historical Operating Hours"""
+    start_day = time[TOMORROW].replace(hour=0, minute=0, second=0, microsecond=0)
+    future = False
+    result = operating_hours_svc.count(start_day, future)
+    assert result == 1

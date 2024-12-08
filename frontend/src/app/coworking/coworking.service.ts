@@ -171,4 +171,31 @@ export class CoworkingService implements OnDestroy {
         )
       );
   }
+
+  getPaginatedOperatingHours(
+    startDate: Date,
+    page: number,
+    pageSize: number,
+    future: boolean
+  ): Observable<OperatingHours[]> {
+    let params = new HttpParams()
+      .set('start_date', startDate.toISOString())
+      .set('page', page)
+      .set('page_size', pageSize)
+      .set('future', future);
+    return this.http
+      .get<OperatingHoursJSON[]>('/api/coworking/operating_hours/page', {
+        params: params
+      })
+      .pipe(map((jsonArray) => jsonArray.map(parseOperatingHoursJSON)));
+  }
+
+  countHours(startDate: Date, future: boolean): Observable<number> {
+    let params = new HttpParams()
+      .set('start_date', startDate.toISOString())
+      .set('future', future);
+    return this.http.get<number>('/api/coworking/operating_hours/count', {
+      params: params
+    });
+  }
 }
