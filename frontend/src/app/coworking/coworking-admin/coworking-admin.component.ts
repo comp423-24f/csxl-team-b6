@@ -42,8 +42,14 @@ export class CoworkingAdminComponent {
 
   protected dataSource = new MatTableDataSource<OperatingHours>([]);
   protected selection: SelectionModel<OperatingHours>;
-  welcomeOverview: WritableSignal<WelcomeOverview | undefined> =
-    signal(undefined);
+
+  welcomeOverview: WritableSignal<WelcomeOverview> = signal({
+    announcement: null,
+    latest_news: [],
+    operating_hours: [],
+    upcoming_reservations: [],
+    registered_events: []
+  });
 
   openOperatingHours = computed(() => {
     const now = new Date();

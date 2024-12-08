@@ -66,11 +66,11 @@
       <mat-card-content>
         @if (openOperatingHours()) {
         <coworking-operating-hours-panel
-          [operatingHours]="welcomeOverview()!.operating_hours"
+          [operatingHours]="welcomeOverview().operating_hours"
           [openOperatingHours]="openOperatingHours()" />
         } @else {
         <coworking-operating-hours-panel
-          [operatingHours]="welcomeOverview()!.operating_hours" />
+          [operatingHours]="welcomeOverview().operating_hours" />
         }
       </mat-card-content>
     </mat-card>
